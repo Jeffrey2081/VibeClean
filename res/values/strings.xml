@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VibeClean PRO</string>
+    <string name="widget_name">VibeClean Widget</string>
+    <string name="widget_clean_button">⚡ VIBE BOOST</string>
+    <string name="widget_storage_label">Storage</string>
+    <string name="widget_ram_label">RAM</string>
+    <string name="accessibility_service_label">VibeClean Auto-Cache Cleaner</string>
+    <string name="accessibility_service_desc">Automates clearing app cache files in system settings without requiring root access.</string>
+</resources>

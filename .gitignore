@@ -1,0 +1,6 @@
+build_tmp/
+*.class
+*.idsig
+release.keystore
+.DS_Store
+*.log

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>VibeClean PRO</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top App Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-badge">
+                    <img src="icons/app_icon.png" alt="VibeClean" class="app-icon-small">
+                    <div class="title-group">
+                        <span class="app-title">VibeClean</span>
+                        <span class="pro-tag">PRO</span>
+                        <span class="vibe-tag">VIBE CODED ✨</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-pill" id="battery-status">
+                    <span class="pill-dot"></span>
+                    <span id="battery-text">--%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Device Info Banner -->
+        <div class="device-banner">
+            <span class="device-model" id="device-model">Android Device</span>
+            <span class="device-dot">·</span>
+            <span class="device-version" id="device-version">Android OS</span>
+        </div>
+
+        <!-- Permission Warning Banner (if needed) -->
+        <div class="permission-banner" id="storage-perm-banner" style="display: none;">
+            <div class="perm-content">
+                <span class="perm-icon">⚠️</span>
+                <div class="perm-text">
+                    <strong>Storage Access Required</strong>
+                    <p>Grant permission to enable full SD card and cache cleaning.</p>
+                </div>
+            </div>
+            <button class="btn-perm-grant" id="btn-grant-storage">Grant Access</button>
+        </div>
+
+        <!-- Main Tab Content Area -->
+        <main class="tab-content-container">
+
+            <!-- TAB 1: DASHBOARD / 1-TAP CLEAN -->
+            <section id="tab-dashboard" class="tab-page active">
+                <!-- Circular Storage Gauge Card -->
+                <div class="card gauge-card">
+                    <div class="gauge-wrapper">
+                        <svg class="progress-ring" width="220" height="220">
+                            <circle class="ring-bg" stroke="rgba(255,255,255,0.08)" stroke-width="14" fill="transparent" r="90" cx="110" cy="110" />
+                            <circle class="ring-fill" id="storage-ring" stroke="url(#cyan-gradient)" stroke-width="14" stroke-linecap="round" fill="transparent" r="90" cx="110" cy="110" />
+                            <defs>
+                                <linearGradient id="cyan-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#00F0FF" />
+                                    <stop offset="100%" stop-color="#00E676" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="gauge-center">
+                            <span class="gauge-percent" id="storage-percent">--%</span>
+                            <span class="gauge-sublabel">STORAGE USED</span>
+                            <span class="gauge-detail" id="storage-free-detail">-- GB Free</span>
+                        </div>
+                    </div>
+
+                    <!-- RAM Meter Mini Bar -->
+                    <div class="ram-meter-box">
+                        <div class="ram-labels">
+                            <span class="ram-title">RAM Usage</span>
+                            <span class="ram-val" id="ram-text">--% Used</span>
+                        </div>
+                        <div class="ram-bar-bg">
+                            <div class="ram-bar-fill" id="ram-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="ram-actions">
+                            <span class="ram-detail" id="ram-avail-detail">-- GB Available</span>
+                            <button class="btn-mini-boost" id="btn-mini-boost">⚡ Boost RAM</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HERO 1-TAP CLEAN BUTTON -->
+                <div class="hero-clean-container">
+                    <button class="btn-hero-clean" id="btn-hero-clean">
+                        <span class="hero-glow"></span>
+                        <div class="hero-btn-content">
+                            <span class="hero-icon">⚡</span>
+                            <span class="hero-text">1-TAP VIBE CLEAN</span>
+                            <span class="hero-subtext">Instant Cache & RAM Optimization</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- TURBO SHELL & AOT ART OPTIMIZATION SUITE -->
+                <div class="card turbo-shell-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">🚀</span>
+                            <div>
+                                <h3 class="card-title">AOT ART & System Optimizer</h3>
+                                <p class="card-subtitle">Ahead-of-Time compilation, UFS TRIM & System Cache</p>
+                            </div>
+                        </div>
+                        <span class="badge-shell" id="root-status-badge">Shell Ready</span>
+                    </div>
+
+                    <div class="turbo-actions-grid">
+                        <button class="btn-turbo-action" id="btn-run-aot">
+                            <span class="turbo-btn-icon">⚡</span>
+                            <div class="turbo-btn-text">
+                                <strong>AOT ART Dexopt</strong>
+                                <small>Compile Apps & Core UI (speed)</small>
+                            </div>
+                        </button>
+                        <button class="btn-turbo-action" id="btn-trim-caches">
+                            <span class="turbo-btn-icon">🧹</span>
+                            <div class="turbo-btn-text">
+                                <strong>pm trim-caches</strong>
+                                <small>System-level Package Cache Trim</small>
+                            </div>
+                        </button>
+                        <button class="btn-turbo-action" id="btn-sm-fstrim">
+                            <span class="turbo-btn-icon">💽</span>
+                            <div class="turbo-btn-text">
+                                <strong>Hardware TRIM</strong>
+                                <small>sm fstrim (Restore Flash Speed)</small>
+                            </div>
+                        </button>
+                        <button class="btn-turbo-action" id="btn-clean-xml-root">
+                            <span class="turbo-btn-icon">📄</span>
+                            <div class="turbo-btn-text">
+                                <strong>Clean XML Leftovers</strong>
+                                <small>Purge /sdcard root XML & dumps</small>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Hardware & Health Status Pill Bar -->
+                    <div class="hw-health-bar">
+                        <div class="hw-item">
+                            <span class="hw-label">Battery Health:</span>
+                            <span class="hw-val" id="hw-battery-val">Good (Cool)</span>
+                        </div>
+                        <div class="hw-item">
+                            <span class="hw-label">RAM Plus:</span>
+                            <span class="hw-val" id="hw-ramplus-val">0 GB (Low Wear)</span>
+                        </div>
+                        <div class="hw-item">
+                            <span class="hw-label">Available:</span>
+                            <span class="hw-val" id="hw-storage-val">-- GB Free</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-copy-adb" id="btn-copy-adb">📋 Copy Full ADB Shell One-Liner</button>
+                </div>
+
+                <!-- Quick Category Preview Grid -->
+                <div class="section-title">Clean Summary</div>
+                <div class="category-grid">
+                    <div class="cat-card" data-cat="cache">
+                        <div class="cat-icon-wrap cyan">🗂️</div>
+                        <div class="cat-info">
+                            <span class="cat-name">App Cache</span>
+                            <span class="cat-size" id="dash-cache-size">-- MB</span>
+                        </div>
+                    </div>
+                    <div class="cat-card" data-cat="sd">
+                        <div class="cat-icon-wrap emerald">💾</div>
+                        <div class="cat-info">
+                            <span class="cat-name">SD Junk</span>
+                            <span class="cat-size" id="dash-sd-size">-- MB</span>
+                        </div>
+                    </div>
+                    <div class="cat-card" data-cat="apk">
+                        <div class="cat-icon-wrap purple">📦</div>
+                        <div class="cat-info">
+                            <span class="cat-name">Old APKs</span>
+                            <span class="cat-size" id="dash-apk-size">-- MB</span>
+                        </div>
+                    </div>
+                    <div class="cat-card" data-cat="residual">
+                        <div class="cat-icon-wrap coral">🗑️</div>
+                        <div class="cat-info">
+                            <span class="cat-name">Residual Files</span>
+                            <span class="cat-size" id="dash-res-size">-- MB</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CACHE & SD CLEANER -->
+            <section id="tab-cleaner" class="tab-page">
+                <div class="scan-header-card card">
+                    <div class="scan-status-group">
+                        <div class="scan-radar-icon" id="scan-radar-icon">🔍</div>
+                        <div class="scan-status-text">
+                            <span class="scan-title" id="scan-title">Deep Junk Scanner</span>
+                            <span class="scan-path-ticker" id="scan-path-ticker">Ready to scan internal & SD storage</span>
+                        </div>
+                    </div>
+                    <div class="scan-progress-bar-wrap" id="scan-progress-wrap" style="display: none;">
+                        <div class="scan-progress-bar" id="scan-progress-bar" style="width: 0%"></div>
+                    </div>
+                    <button class="btn-scan-primary" id="btn-start-scan">
+                        <span>🔍 Deep Scan Storage</span>
+                    </button>
+                </div>
+
+                <!-- Scan Results Accordion -->
+                <div id="scan-results-area" style="display: none;">
+                    <div class="scan-summary-bar">
+                        <div class="summary-left">
+                            <span class="summary-total-label">Junk Found:</span>
+                            <span class="summary-total-val" id="scan-total-found">0 MB</span>
+                        </div>
+                        <label class="select-all-toggle">
+                            <input type="checkbox" id="toggle-select-all" checked>
+                            <span>Select All</span>
+                        </label>
+                    </div>
+
+                    <div class="category-list" id="category-list">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+
+                    <!-- Clean Action Bar -->
+                    <div class="floating-clean-bar">
+                        <button class="btn-clean-now" id="btn-clean-selected">
+                            <span>🧹 Clean Selected Junk</span>
+                            <span class="clean-size-badge" id="clean-selected-size">(0 MB)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Orphaned XML & Root Junk Sweeper -->
+                <div class="card xml-cleaner-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">📄</span>
+                            <div>
+                                <h3 class="card-title">Orphaned XML & Dump Sweeper</h3>
+                                <p class="card-subtitle">Purge old GCam camera configs, .bak, and crash logs from /sdcard</p>
+                            </div>
+                        </div>
+                        <button class="btn-secondary-sm" id="btn-clean-xml-files">Clean XMLs</button>
+                    </div>
+                    <div id="xml-files-status" class="empty-hint">Found GCam configs (cam_settings.xml, hdr_menu.xml, etc.). Tap Clean to purge.</div>
+                </div>
+
+                <!-- Large Files Sub-section -->
+                <div class="card large-files-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">📁</span>
+                            <div>
+                                <h3 class="card-title">Large Files Analyzer</h3>
+                                <p class="card-subtitle">Find & remove forgotten large files (> 50MB)</p>
+                            </div>
+                        </div>
+                        <button class="btn-secondary-sm" id="btn-scan-large-files">Find Files</button>
+                    </div>
+                    <div class="large-files-list" id="large-files-list">
+                        <div class="empty-hint">Tap "Find Files" to scan for space-hogging media and archives.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: APP MONITOR, ACCESSIBILITY AUTO-CLEANER & SORTING -->
+            <section id="tab-apps" class="tab-page">
+                <!-- HERO ACCESSIBILITY AUTO-CLEANER CARD -->
+                <div class="card accessibility-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">🤖</span>
+                            <div>
+                                <h3 class="card-title">Accessibility Auto-Cleaner</h3>
+                                <p class="card-subtitle">Hands-free: Opens each app and clears cache automatically</p>
+                            </div>
+                        </div>
+                        <button class="btn-hero-action" id="btn-start-auto-clean">⚡ Auto-Clean All</button>
+                    </div>
+                    <div class="accessibility-status" id="accessibility-status-text">
+                        <span id="access-badge" class="badge-status">Accessibility: Ready</span>
+                        <span id="access-subtext">Automates App Settings ➔ Storage ➔ Clear Cache</span>
+                    </div>
+                </div>
+
+                <!-- Usage Access Banner (if needed) -->
+                <div class="card usage-notice-card" id="usage-notice-card" style="display: none;">
+                    <div class="usage-text">
+                        <strong>📊 Enable Exact App Storage Stats</strong>
+                        <p>Grant Usage Access to let VibeClean inspect internal cache and data breakdown with 100% precision.</p>
+                    </div>
+                    <button class="btn-usage-grant" id="btn-grant-usage">Enable</button>
+                </div>
+
+                <!-- Cache Limit Alert Setup -->
+                <div class="card cache-alert-card">
+                    <div class="alert-config-header">
+                        <span class="alert-icon">🔔</span>
+                        <div>
+                            <h3 class="card-title">High Cache Size Alert</h3>
+                            <p class="card-subtitle">Notify me if an app’s cache grows larger than:</p>
+                        </div>
+                    </div>
+                    <div class="limit-selector-group">
+                        <button class="limit-chip" data-limit="50">50 MB</button>
+                        <button class="limit-chip" data-limit="100">100 MB</button>
+                        <button class="limit-chip active" data-limit="250">250 MB</button>
+                        <button class="limit-chip" data-limit="500">500 MB</button>
+                        <button class="limit-chip" data-limit="1000">1 GB</button>
+                    </div>
+                </div>
+
+                <!-- App Sorting Bar -->
+                <div class="apps-sort-bar">
+                    <div class="sort-pills">
+                        <button class="sort-pill active" data-sort="cache">⚡ Cache Size</button>
+                        <button class="sort-pill" data-sort="total">📦 Total Size</button>
+                        <button class="sort-pill" data-sort="data">💾 Data Size</button>
+                        <button class="sort-pill" data-sort="name">🔤 Name</button>
+                    </div>
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="toggle-user-apps-only" checked>
+                        <span>User Apps Only</span>
+                    </label>
+                </div>
+
+                <!-- App Items List -->
+                <div class="app-items-list" id="app-items-list">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <span>Loading installed apps...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: HISTORY & DEFAULTS CLEANER -->
+            <section id="tab-defaults" class="tab-page">
+                <!-- Defaults Cleaner Card -->
+                <div class="card defaults-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">🔄</span>
+                            <div>
+                                <h3 class="card-title">Defaults Cleaner</h3>
+                                <p class="card-subtitle">Reset preferred apps opening links or media automatically</p>
+                            </div>
+                        </div>
+                        <button class="btn-secondary-sm" id="btn-open-system-defaults">System Defaults</button>
+                    </div>
+
+                    <div class="defaults-items-group" id="defaults-items-group">
+                        <!-- Default Browser -->
+                        <div class="default-row" id="def-row-browser">
+                            <div class="def-icon">🌐</div>
+                            <div class="def-details">
+                                <span class="def-role">Default Browser</span>
+                                <span class="def-current" id="def-browser-name">Checking...</span>
+                            </div>
+                            <button class="btn-clear-def" id="btn-clear-browser-def">Reset</button>
+                        </div>
+
+                        <!-- Default Phone -->
+                        <div class="default-row" id="def-row-dialer">
+                            <div class="def-icon">📞</div>
+                            <div class="def-details">
+                                <span class="def-role">Default Phone / Dialer</span>
+                                <span class="def-current" id="def-dialer-name">Checking...</span>
+                            </div>
+                            <button class="btn-clear-def" id="btn-clear-dialer-def">Reset</button>
+                        </div>
+
+                        <!-- Default SMS -->
+                        <div class="default-row" id="def-row-sms">
+                            <div class="def-icon">💬</div>
+                            <div class="def-details">
+                                <span class="def-role">Default SMS App</span>
+                                <span class="def-current" id="def-sms-name">Checking...</span>
+                            </div>
+                            <button class="btn-clear-def" id="btn-clear-sms-def">Reset</button>
+                        </div>
+
+                        <!-- Default Launcher -->
+                        <div class="default-row" id="def-row-launcher">
+                            <div class="def-icon">🏠</div>
+                            <div class="def-details">
+                                <span class="def-role">Default Home Screen</span>
+                                <span class="def-current" id="def-launcher-name">Checking...</span>
+                            </div>
+                            <button class="btn-clear-def" id="btn-clear-launcher-def">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Apps with Defaults -->
+                    <div class="preferred-apps-container" id="preferred-apps-container" style="display: none;">
+                        <span class="section-subhead">Apps with Custom Associations:</span>
+                        <div id="preferred-apps-list"></div>
+                    </div>
+                </div>
+
+                <!-- History & Log Cleaner Card -->
+                <div class="card history-card">
+                    <div class="header-title-wrap" style="margin-bottom: 12px;">
+                        <span class="card-icon">📜</span>
+                        <div>
+                            <h3 class="card-title">History & Log Cleaner</h3>
+                            <p class="card-subtitle">Erase clipboard contents, crash dumps, and history logs</p>
+                        </div>
+                    </div>
+
+                    <div class="history-actions-list">
+                        <!-- Clipboard Item -->
+                        <div class="history-action-item">
+                            <div class="action-info">
+                                <span class="action-name">📋 Clipboard Cache</span>
+                                <span class="action-desc" id="clip-status-desc">Sensitive copied text & passwords</span>
+                            </div>
+                            <button class="btn-clean-item" id="btn-clean-clipboard">Wipe</button>
+                        </div>
+
+                        <!-- Error Logs Item -->
+                        <div class="history-action-item">
+                            <div class="action-info">
+                                <span class="action-name">📑 System & App Logs</span>
+                                <span class="action-desc" id="logs-status-desc">Leftover .log and crash stack traces</span>
+                            </div>
+                            <button class="btn-clean-item" id="btn-clean-logs">Clear Logs</button>
+                        </div>
+
+                        <!-- Browser History & WebView cache -->
+                        <div class="history-action-item">
+                            <div class="action-info">
+                                <span class="action-name">🌐 Web Storage & Cookies</span>
+                                <span class="action-desc">Internal browser storage & cached sessions</span>
+                            </div>
+                            <button class="btn-clean-item" id="btn-clean-web">Clean</button>
+                        </div>
+
+                        <!-- Call Logs Item -->
+                        <div class="history-action-item">
+                            <div class="action-info">
+                                <span class="action-name">📞 Call Logs</span>
+                                <span class="action-desc" id="call-logs-desc">Call history records</span>
+                            </div>
+                            <button class="btn-clean-item btn-danger" id="btn-clean-calls">Wipe Calls</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: WIDGETS & AUTOMATION -->
+            <section id="tab-automation" class="tab-page">
+                <!-- Home Screen Widget Guide -->
+                <div class="card widget-guide-card">
+                    <div class="header-title-wrap" style="margin-bottom: 12px;">
+                        <span class="card-icon">📱</span>
+                        <div>
+                            <h3 class="card-title">Home Screen 1-Tap Widget</h3>
+                            <p class="card-subtitle">Monitor space & trigger 1-Tap cleans directly from your home screen</p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Widget Preview Mockup -->
+                    <div class="widget-preview-box">
+                        <div class="mock-widget">
+                            <div class="mock-header">
+                                <img src="icons/app_icon.png" class="mock-icon" alt="icon">
+                                <span class="mock-title">VibeClean PRO</span>
+                                <span class="mock-status">Ready</span>
+                            </div>
+                            <div class="mock-metrics">
+                                <div class="mock-metric">
+                                    <span class="mock-label">STORAGE</span>
+                                    <span class="mock-val" id="mock-storage-val">42.5 GB (Free)</span>
+                                </div>
+                                <div class="mock-metric">
+                                    <span class="mock-label">RAM USAGE</span>
+                                    <span class="mock-val" id="mock-ram-val">68% Used</span>
+                                </div>
+                            </div>
+                            <button class="mock-clean-btn" id="btn-test-widget-clean">⚡ VIBE BOOST</button>
+                        </div>
+                    </div>
+
+                    <div class="guide-steps">
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+                            <span>Long-press on your phone's Home Screen wallpaper</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+                            <span>Select <strong>Widgets</strong> from the menu</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+                            <span>Find <strong>VibeClean Widget</strong> and drag it to your screen!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automation Settings Card -->
+                <div class="card automation-card">
+                    <div class="header-title-wrap" style="margin-bottom: 16px;">
+                        <span class="card-icon">⚙️</span>
+                        <div>
+                            <h3 class="card-title">Automated Cleaning</h3>
+                            <p class="card-subtitle">Keep your phone running smooth without lifting a finger</p>
+                        </div>
+                    </div>
+
+                    <div class="toggle-setting-row">
+                        <div class="toggle-label-wrap">
+                            <span class="toggle-name">Auto-Clean on Low Storage</span>
+                            <span class="toggle-desc">Automatically purges cache and temp junk when phone storage drops below 10%</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="switch-auto-low-storage" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-setting-row">
+                        <div class="toggle-label-wrap">
+                            <span class="toggle-name">Scheduled Background Clean</span>
+                            <span class="toggle-desc">Runs daily background sweeps for temp leftovers and monitors cache growth</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="switch-scheduled-clean" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="save-settings-bar">
+                        <button class="btn-save-settings" id="btn-save-automation">Save Preferences</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="tab-dashboard">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-label">1-Tap</span>
+            </button>
+            <button class="nav-item" data-target="tab-cleaner">
+                <span class="nav-icon">🧹</span>
+                <span class="nav-label">Junk</span>
+            </button>
+            <button class="nav-item" data-target="tab-apps">
+                <span class="nav-icon">📱</span>
+                <span class="nav-label">Apps</span>
+            </button>
+            <button class="nav-item" data-target="tab-defaults">
+                <span class="nav-icon">🔄</span>
+                <span class="nav-label">Defaults</span>
+            </button>
+            <button class="nav-item" data-target="tab-automation">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Widgets</span>
+            </button>
+        </nav>
+
+        <!-- Celebration / Completion Modal -->
+        <div class="modal-overlay" id="celebration-modal" style="display: none;">
+            <canvas id="confetti-canvas"></canvas>
+            <div class="modal-content card">
+                <div class="modal-icon-sparkle">✨</div>
+                <h2 class="modal-title">Device Optimized!</h2>
+                <div class="freed-counter-wrap">
+                    <span class="freed-amount" id="modal-freed-amount">0 MB</span>
+                    <span class="freed-label">FREED UP</span>
+                </div>
+                <p class="modal-msg" id="modal-msg">Your device is faster, lighter, and refreshed.</p>
+                <button class="btn-modal-dismiss" id="btn-modal-dismiss">Done</button>
+            </div>
+        </div>
+
+        <!-- Turbo Shell / AOT Progress Overlay Modal -->
+        <div class="modal-overlay" id="aot-modal" style="display: none;">
+            <div class="modal-content card" style="max-width: 360px;">
+                <div class="modal-icon-sparkle">⚡</div>
+                <h2 class="modal-title" id="aot-modal-title">AOT Optimization Running</h2>
+                <p class="modal-msg" id="aot-modal-status">Compiling application bytecode into native machine code...</p>
+                <div class="scan-progress-bar-wrap" style="width: 100%; margin: 12px 0;">
+                    <div class="scan-progress-bar" id="aot-progress-bar" style="width: 0%;"></div>
+                </div>
+                <div class="shell-log-window" id="shell-log-window"></div>
+                <button class="btn-modal-dismiss" id="btn-aot-close" style="display: none;">Dismiss</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/sound.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
