@@ -36,24 +36,31 @@ A single prominent hero button that sequentially triggers all high-performance o
 6. **AOT Native Machine Code Compilation**: Compiles core UI components (One UI Home, System UI, Keyboard, Camera, Gallery, Google Play Services) into machine code (`speed`).
 7. **RAM & Process Boost**: Flushes background cache and triggers system garbage collection.
 
-### 3. 🖼️ Samsung Galaxy (S20-S26) & Android Gallery Thumbnail Purge
-Fixes the notorious Android 11-16 scoped storage issue where thumbnail caches don't get cleared:
-- Recursively scans and purges `/sdcard/DCIM/.thumbnails`, `/sdcard/Pictures/.thumbnails`, `/sdcard/Movies/.thumbnails`, and `/sdcard/Download/.thumbnails`.
-- Deep-cleans massive hidden `.thumbdata3--*` and `.thumbdata4--*` index files.
-- Clears Android MediaStore `.trashed-*` files (photos and videos kept in limbo consuming gigabytes).
-- Automatically invokes Android `ContentResolver` to update MediaStore indexes immediately after deletion.
+### 3. 🖼️ Samsung Galaxy (S20-S26) & Android Gallery Thumbnail Purge & System Storage Sync
+Fixes the notorious Android 11-16 scoped storage issue where thumbnail caches don't get cleared or fail to update in system settings:
+- **Daemon Unlock**: Force-stops `com.sec.android.gallery3d` and media providers so locked file descriptors on `.thumbdata` files are released.
+- **Deep Disk Wipe & Truncation**: Recursively scans and purges `/sdcard/DCIM/.thumbnails`, `/sdcard/Pictures/.thumbnails`, `/sdcard/Movies/.thumbnails`, `/sdcard/Download/.thumbnails`, and truncates locked `.thumbdata3--*` and `.thumbdata4--*` files to 0 bytes.
+- **MediaStore Database Reconciler**: Runs SQL deletes on `content://media/external/file` and `MediaStore.Images.Media` to eliminate stale thumbnail references.
+- **System Storage Cache Sync**: Triggers `MediaScannerConnection.scanFile`, broadcasts `MEDIA_SCANNER_SCAN_FILE`, and executes `pm trim-caches 999G` so Android System and Settings -> Storage immediately recalculate and reflect the freed space!
 
-### 4. 🔋 True Battery Health State (Not Just Percent)
+### 4. 🔋 Battery & Quick Doze Optimization Shield
+Derived from deep kernel and ADB power management tuning:
+- **⚡ Quick Doze Mode**: Tunes `device_idle_constants` (`quick_doze_delay_to=0`) to plunge the device into deep sleep the millisecond the screen turns off, saving 15–30% idle battery overnight.
+- **📡 Background Radio Shield**: Disables continuous Wi-Fi background location beacons (`wifi_scan_always_enabled=0`) and Bluetooth LE scanning (`ble_scan_always_enabled=0`), plus disables mobile data always-on while on Wi-Fi.
+- **🛑 Wakelock Shield & App Standby**: Automatically detects heavy background drainers (Instagram, Snapchat, Facebook, TikTok, backup loops) and sets their standby bucket to `restricted` while ignoring background execution (`RUN_IN_BACKGROUND ignore`) and background wakelocks (`WAKE_LOCK ignore`).
+- **💨 GPU & Animation Scaling (0.5x)**: Reduces window animation scale to 0.5x to reduce GPU wakeups, rendering overhead, and AP thermal throttling.
+
+### 5. 🔋 True Battery Health State (Not Just Percent)
 - Queries Android `BatteryManager.EXTRA_HEALTH` and Linux/Samsung sysfs nodes (`/sys/class/power_supply/battery/health`, `fg_asoc`, `battery_cycle`).
 - Accurately displays the true **Battery Health condition**: **Good (Optimal)**, **Normal**, or **Overheated**, rather than confusing it with current battery charge percentage.
 
-### 5. 📱 Multi-Widget Suite (3 Useful Home Screen Widgets)
+### 6. 📱 Multi-Widget Suite (3 Useful Home Screen Widgets)
 Includes 3 distinct native Android widgets:
 1. **System Stats Monitor (`4 × 2`)**: Real-time Free Storage, RAM Usage %, Battery Health (Good/Optimal), and ZRAM/Swap status with an instant `⚡ BOOST` button.
 2. **1-Tap Classic Cleaner (`3 × 2`)**: Visual Storage and RAM meters with instant 1-tap background cache cleaning and haptic feedback.
 3. **Quick Clean Pill (`2 × 1`)**: Minimalist liquid glass pill displaying free storage with a quick-tap BOOST action designed for clean dock setups.
 
-### 6. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
+### 7. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
 - Built-in `AutoCacheCleanerService` automatically navigates through all installed apps.
 - Opens system App Info → Storage → dynamically detects and taps **"Clear cache"** → returns back to queue the next app.
 

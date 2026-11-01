@@ -1857,3 +1857,87 @@ input:checked + .slider:before {
     line-height: 1.35;
 }
 
+/* ==============================================================================
+   Battery Drain & Quick Doze Optimizer Shield Styles
+   ============================================================================== */
+
+.battery-shield-card {
+    border-color: rgba(0, 230, 118, 0.35);
+    background: linear-gradient(135deg, rgba(0, 230, 118, 0.08) 0%, rgba(18, 26, 45, 0.8) 100%);
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.badge-battery-shield {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-emerald);
+    background: rgba(0, 230, 118, 0.12);
+    border: 1px solid rgba(0, 230, 118, 0.3);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.battery-features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+.battery-feature-item {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.feat-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.feat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.feat-info strong {
+    font-size: 0.76rem;
+    color: #FFF;
+}
+
+.feat-info small {
+    font-size: 0.64rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.25;
+}
+
+.btn-battery-shield-apply {
+    width: 100%;
+    background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
+    border: none;
+    color: #0A0F1D;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0, 230, 118, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-battery-shield-apply:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 10px rgba(0, 230, 118, 0.4);
+}
+
+

@@ -432,6 +432,17 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     }
 
     @JavascriptInterface
+    public String applyBatteryOptimizationSuite() {
+        vibrate(100);
+        return turboEngine.applyBatteryOptimizationSuite().toString();
+    }
+
+    @JavascriptInterface
+    public String getBatteryOptimizationStatus() {
+        return turboEngine.getBatteryOptimizationStatus().toString();
+    }
+
+    @JavascriptInterface
     public String getAdbCommandScript() {
         return turboEngine.getAdbCommandScript();
     }

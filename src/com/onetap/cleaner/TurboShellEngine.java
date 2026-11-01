@@ -263,7 +263,14 @@ public class TurboShellEngine {
             beforeFree = engine.getStorageInfo().optLong("freeBytes", 0);
         } catch (Exception ignored) {}
 
-        // Shell command purges both standard Android media thumbnail caches and Samsung One UI private thumbnail paths
+        // 1. Force stop gallery apps so locked file descriptors on .thumbdata are released
+        String stopCmd = "am force-stop com.sec.android.gallery3d 2>/dev/null; " +
+                         "am force-stop com.google.android.apps.photos 2>/dev/null; " +
+                         "am force-stop com.android.gallery3d 2>/dev/null; " +
+                         "am force-stop com.samsung.android.gallery.preview 2>/dev/null";
+        runShellCommand(stopCmd);
+
+        // 2. Shell command purges both standard Android media thumbnail caches and Samsung One UI private thumbnail paths
         String cmd = "rm -rf /sdcard/DCIM/.thumbnails/* /sdcard/Pictures/.thumbnails/* " +
                 "/sdcard/Movies/.thumbnails/* /sdcard/Download/.thumbnails/* /sdcard/.thumbnails/* " +
                 "/sdcard/DCIM/.thumb/* /sdcard/Pictures/.thumb/* " +
@@ -274,37 +281,120 @@ public class TurboShellEngine {
                 "/sdcard/Android/data/com.samsung.android.gallery.preview/*";
         String shellOut = runShellCommand(cmd);
 
-        // Java sweep as well for storage paths accessible under MANAGE_EXTERNAL_STORAGE
-        File ext = Environment.getExternalStorageDirectory();
-        if (ext != null && ext.exists()) {
-            File[] targets = new File[]{
-                    new File(ext, "DCIM/.thumbnails"),
-                    new File(ext, "DCIM/.thumb"),
-                    new File(ext, "Pictures/.thumbnails"),
-                    new File(ext, "Pictures/.thumb"),
-                    new File(ext, "Movies/.thumbnails"),
-                    new File(ext, "Download/.thumbnails"),
-                    new File(ext, ".thumbnails"),
-                    new File(ext, "DCIM/.trash"),
-                    new File(ext, "Pictures/.trash")
-            };
-            for (File t : targets) {
-                if (t.exists()) {
-                    deleteContentsRecursively(t);
-                }
-            }
-        }
+        // 3. Delete stale MediaStore records so the system storage updates immediately
+        String contentCmd = "content delete --uri content://media/external/file --where \"_data LIKE '%/.thumbnails%' OR _data LIKE '%.thumbdata%' OR _data LIKE '%/.trash%'\" 2>/dev/null";
+        runShellCommand(contentCmd);
+
+        // 4. Broadcast MediaScanner to force system to rescan and drop dead thumbnail references
+        String scanCmd = "am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/DCIM 2>/dev/null; " +
+                         "am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures 2>/dev/null";
+        runShellCommand(scanCmd);
+
+        // 5. Java sweep & ContentResolver cleanup
+        CleanerEngine engine = new CleanerEngine(context);
+        JSONObject javaPurge = engine.purgeGalleryThumbnailsWithSystemRescan();
+
+        // 6. Force OS to invalidate cached storage stats so Settings -> Storage updates immediately
+        runSystemCacheTrim();
 
         try {
-            CleanerEngine engine = new CleanerEngine(context);
             afterFree = engine.getStorageInfo().optLong("freeBytes", 0);
-            long freed = Math.max(0, afterFree - beforeFree);
+            long freed = Math.max(javaPurge.optLong("bytesFreed", 0), Math.max(0, afterFree - beforeFree));
             res.put("success", true);
             res.put("bytesFreed", freed);
-            res.put("message", "Samsung Gallery & Media Thumbnail cache purged.");
+            res.put("message", "Samsung Gallery & Media Thumbnail cache purged and storage index reconciled.");
         } catch (Exception ignored) {}
 
         return res;
+    }
+
+    // 7. Battery Optimization Suite (Quick Doze, Radio Scanner Fixes, Wakelock Restrictions & Adaptive Battery)
+    public JSONObject applyBatteryOptimizationSuite() {
+        JSONObject res = new JSONObject();
+        List<String> actions = new ArrayList<>();
+
+        // 1. Quick Doze: Immediate Deep Sleep when screen is off
+        String dozeCmd = "settings put global device_idle_constants \"quick_doze_delay_to=0,sensing_to=0,locating_to=0,motion_inactive_to=0,light_after_inactive_to=0,inactive_to=10000\"";
+        runShellCommand(dozeCmd);
+        actions.add("⚡ Quick Doze Activated: Immediate deep sleep on screen-off");
+
+        // 2. Radio & Background Location Scanners
+        String radioCmd = "settings put global wifi_scan_always_enabled 0 && " +
+                          "settings put global ble_scan_always_enabled 0 && " +
+                          "settings put global mobile_data_always_on 0 && " +
+                          "settings put global send_action_app_error 0";
+        runShellCommand(radioCmd);
+        actions.add("📡 Background Radio & Location Scanners Disabled (Wi-Fi/BLE beacons stopped)");
+
+        // 3. App Standby & Adaptive Battery
+        String adaptiveCmd = "settings put global app_standby_enabled 1 && " +
+                             "settings put global adaptive_battery_management_enabled 1";
+        runShellCommand(adaptiveCmd);
+        actions.add("🔋 Android Adaptive Battery & Aggressive App Standby Enabled");
+
+        // 4. GPU & Animation Tuning
+        String animCmd = "settings put global window_animation_scale 0.5 && " +
+                         "settings put global transition_animation_scale 0.5 && " +
+                         "settings put global animator_duration_scale 0.5";
+        runShellCommand(animCmd);
+        actions.add("💨 Animation & GPU Overhead Tuned to 0.5x");
+
+        // 5. Restrict background drainers and wakelocks
+        String[] heavyDrainers = new String[]{
+                "com.instagram.android",
+                "com.snapchat.android",
+                "com.facebook.katana",
+                "com.zhiliaoapp.musically",
+                "app.morphe.android.apps.photos"
+        };
+        PackageManager pm = context.getPackageManager();
+        int restrictedCount = 0;
+        for (String pkg : heavyDrainers) {
+            try {
+                pm.getApplicationInfo(pkg, 0);
+                String restrictCmd = "am set-standby-bucket " + pkg + " restricted 2>/dev/null; " +
+                                     "cmd appops set " + pkg + " RUN_IN_BACKGROUND ignore 2>/dev/null; " +
+                                     "cmd appops set " + pkg + " RUN_ANY_IN_BACKGROUND ignore 2>/dev/null; " +
+                                     "cmd appops set " + pkg + " WAKE_LOCK ignore 2>/dev/null";
+                runShellCommand(restrictCmd);
+                restrictedCount++;
+            } catch (Exception ignored) {}
+        }
+        actions.add("🛑 Wakelock Shield: Put " + restrictedCount + " heavy background drainers into restricted bucket");
+
+        try {
+            res.put("success", true);
+            res.put("restrictedApps", restrictedCount);
+            JSONArray arr = new JSONArray();
+            for (String a : actions) arr.put(a);
+            res.put("actions", arr);
+            res.put("message", "Battery Optimization Suite successfully applied!");
+        } catch (Exception ignored) {}
+
+        return res;
+    }
+
+    public JSONObject getBatteryOptimizationStatus() {
+        JSONObject obj = new JSONObject();
+        try {
+            String dozeOut = runShellCommand("settings get global device_idle_constants");
+            boolean quickDoze = dozeOut.contains("quick_doze_delay_to=0");
+
+            String wifiScan = runShellCommand("settings get global wifi_scan_always_enabled");
+            String bleScan = runShellCommand("settings get global ble_scan_always_enabled");
+            boolean radiosClean = "0".equals(wifiScan.trim()) && "0".equals(bleScan.trim());
+
+            String adaptive = runShellCommand("settings get global adaptive_battery_management_enabled");
+            boolean adaptiveOn = "1".equals(adaptive.trim());
+
+            obj.put("quickDozeActive", quickDoze);
+            obj.put("radiosOptimized", radiosClean);
+            obj.put("adaptiveBatteryActive", adaptiveOn);
+            obj.put("isOptimized", quickDoze && radiosClean);
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting battery optimization status", e);
+        }
+        return obj;
     }
 
     private static class PipelineAotListener implements ShellProgressListener {
@@ -374,7 +464,7 @@ public class TurboShellEngine {
         totalFreedBytes += xmlFreed;
         logs.add("Storage Sweeper: Purged " + xmlRes.optInt("filesDeleted", 0) + " junk files");
 
-        // Step 5 & 6: Ahead-of-Time ART Compilation (Dexopt)
+        // Step 5: Ahead-of-Time ART Compilation (Dexopt)
         if (listener != null) {
             listener.onProgress("Compiling Apps with ART AOT Dexopt...", 60);
             listener.onLog("🚀 Compiling third-party apps & Core System UI...");
@@ -383,9 +473,17 @@ public class TurboShellEngine {
         logs.add("AOT Compilation: " + aotRes.optInt("compiledThirdParty", 0) + " user apps, "
                 + aotRes.optInt("compiledSystem", 0) + " core UI components optimized.");
 
+        // Step 6: Battery Optimization Suite (Quick Doze, Radio Scan Fixes, Wakelocks)
+        if (listener != null) {
+            listener.onProgress("Applying Battery & Quick Doze Optimization...", 88);
+            listener.onLog("🔋 Activating Quick Doze, radio beacon shields & wakelock limits...");
+        }
+        JSONObject batRes = applyBatteryOptimizationSuite();
+        logs.add("Battery Suite: " + batRes.optString("message", "Applied"));
+
         // Step 7: RAM & Process Optimization
         if (listener != null) {
-            listener.onProgress("Boosting RAM & finalizing system state...", 94);
+            listener.onProgress("Boosting RAM & finalizing system state...", 95);
             listener.onLog("⚡ Freeing background memory and flushing caches...");
         }
         CleanerEngine engine = new CleanerEngine(context);

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
@@ -506,6 +508,121 @@ public class CleanerEngine {
             res.put("bytesFreed", bytesFreed);
             res.put("filesDeleted", filesDeleted);
             res.put("errors", errors);
+        } catch (Exception ignored) {}
+
+        // Rescan system media storage so deleted files update in Android Settings immediately
+        try {
+            File ext = Environment.getExternalStorageDirectory();
+            if (ext != null && ext.exists()) {
+                String[] scanPaths = new String[]{
+                        new File(ext, "DCIM").getAbsolutePath(),
+                        new File(ext, "Pictures").getAbsolutePath(),
+                        new File(ext, "Movies").getAbsolutePath(),
+                        new File(ext, "Download").getAbsolutePath()
+                };
+                MediaScannerConnection.scanFile(context, scanPaths, null, null);
+            }
+        } catch (Exception ignored) {}
+
+        return res;
+    }
+
+    // Comprehensive Samsung & Android Gallery Thumbnail Purge with full system storage rescan
+    public JSONObject purgeGalleryThumbnailsWithSystemRescan() {
+        JSONObject res = new JSONObject();
+        long bytesFreed = 0;
+        int filesDeleted = 0;
+
+        File ext = Environment.getExternalStorageDirectory();
+        if (ext != null && ext.exists()) {
+            File[] targets = new File[]{
+                    new File(ext, "DCIM/.thumbnails"),
+                    new File(ext, "DCIM/.thumb"),
+                    new File(ext, "Pictures/.thumbnails"),
+                    new File(ext, "Pictures/.thumb"),
+                    new File(ext, "Movies/.thumbnails"),
+                    new File(ext, "Download/.thumbnails"),
+                    new File(ext, "Music/.thumbnails"),
+                    new File(ext, ".thumbnails"),
+                    new File(ext, "DCIM/.trash"),
+                    new File(ext, "Pictures/.trash")
+            };
+
+            for (File t : targets) {
+                if (t != null && t.exists()) {
+                    long sz = getDirSize(t);
+                    if (deleteRecursively(t)) {
+                        bytesFreed += sz;
+                        filesDeleted++;
+                    }
+                }
+            }
+
+            // Target .thumbdata files specifically in DCIM and Pictures
+            File[] mediaRoots = new File[]{ new File(ext, "DCIM"), new File(ext, "Pictures"), new File(ext, "Movies") };
+            for (File mRoot : mediaRoots) {
+                if (mRoot != null && mRoot.exists()) {
+                    File[] subFiles = mRoot.listFiles();
+                    if (subFiles != null) {
+                        for (File sf : subFiles) {
+                            String name = sf.getName().toLowerCase();
+                            if (name.contains("thumbdata") || name.startsWith(".trashed-") || name.endsWith(".thumb") || name.equals(".thumbnails")) {
+                                long sz = sf.length();
+                                if (sf.delete()) {
+                                    bytesFreed += sz;
+                                    filesDeleted++;
+                                } else {
+                                    // If deletion locked by gallery daemon, truncate to 0 bytes so it consumes 0 storage
+                                    try {
+                                        java.io.FileOutputStream fos = new java.io.FileOutputStream(sf);
+                                        fos.getChannel().truncate(0);
+                                        fos.close();
+                                        bytesFreed += sz;
+                                    } catch (Exception ignored) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 1. MediaStore Database cleanup via ContentResolver
+        try {
+            context.getContentResolver().delete(
+                    MediaStore.Files.getContentUri("external"),
+                    "_data LIKE '%/.thumbnails%' OR _data LIKE '%.thumbdata%' OR _data LIKE '%/.trash%' OR _data LIKE '%.trashed-%'",
+                    null);
+        } catch (Exception ignored) {}
+
+        // 2. Trigger MediaScanner to rescan DCIM and Pictures
+        try {
+            if (ext != null && ext.exists()) {
+                String[] scanPaths = new String[]{
+                        new File(ext, "DCIM").getAbsolutePath(),
+                        new File(ext, "Pictures").getAbsolutePath(),
+                        new File(ext, "Movies").getAbsolutePath(),
+                        new File(ext, "Download").getAbsolutePath()
+                };
+                MediaScannerConnection.scanFile(context, scanPaths, null, null);
+            }
+        } catch (Exception ignored) {}
+
+        // 3. Broadcast Media Scanner Intent
+        try {
+            if (ext != null && ext.exists()) {
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://" + new File(ext, "DCIM").getAbsolutePath())));
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                        Uri.parse("file://" + new File(ext, "Pictures").getAbsolutePath())));
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            res.put("success", true);
+            res.put("bytesFreed", bytesFreed);
+            res.put("filesDeleted", filesDeleted);
+            res.put("message", "Thumbnails purged and system media storage index refreshed.");
         } catch (Exception ignored) {}
 
         return res;

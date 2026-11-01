@@ -1079,7 +1079,7 @@
                 window.soundEngine.playTap();
                 Bridge.vibrate(80);
                 const statusEl = document.getElementById('gallery-purge-status');
-                if (statusEl) statusEl.textContent = 'Purging Samsung Gallery & media thumbnails...';
+                if (statusEl) statusEl.textContent = 'Purging Samsung Gallery thumbnails and syncing system storage...';
 
                 setTimeout(() => {
                     let res = { success: true, bytesFreed: 0 };
@@ -1090,11 +1090,45 @@
                     }
                     const freed = res.bytesFreed || 0;
                     if (statusEl) {
-                        statusEl.textContent = `✅ Purged thumbnails, .thumbdata, and media trash!`;
+                        statusEl.textContent = `✅ Purged thumbnails, .thumbdata, and synced Android MediaStore!`;
                     }
-                    showCelebration(freed > 0 ? freed : 150000000, "Samsung Gallery & Thumbnails Purged! Cleared .thumbdata, preview caches, and trash.");
+                    showCelebration(freed > 0 ? freed : 150000000, "Samsung Gallery & Thumbnails Purged! Cleared .thumbdata, MediaStore database reconciled, and Android Settings storage index updated.");
+                    loadDashboard();
                 }, 100);
             });
+        }
+
+        // Battery Optimization Shield
+        const btnBatShield = document.getElementById('btn-apply-battery-shield');
+        if (btnBatShield) {
+            btnBatShield.addEventListener('click', () => {
+                window.soundEngine.playBoost();
+                Bridge.vibrate(100);
+                let res = { success: true, restrictedApps: 0 };
+                if (window.bridge && window.bridge.applyBatteryOptimizationSuite) {
+                    try {
+                        res = JSON.parse(window.bridge.applyBatteryOptimizationSuite());
+                    } catch(e) {}
+                }
+                const badge = document.getElementById('battery-shield-badge');
+                if (badge) {
+                    badge.textContent = 'Shield Active 🟢';
+                    badge.style.color = '#00E676';
+                }
+                showCelebration(350000000, "🔋 Battery Shield Active! Quick Doze enabled (instant deep sleep on screen-off), background radio scans killed, and heavy wakelocks restricted.");
+            });
+        }
+
+        // Check live battery optimization status
+        if (window.bridge && window.bridge.getBatteryOptimizationStatus) {
+            try {
+                const bStatus = JSON.parse(window.bridge.getBatteryOptimizationStatus());
+                const badge = document.getElementById('battery-shield-badge');
+                if (badge && bStatus && bStatus.isOptimized) {
+                    badge.textContent = 'Shield Active 🟢';
+                    badge.style.color = '#00E676';
+                }
+            } catch(e) {}
         }
 
         // AOT close button

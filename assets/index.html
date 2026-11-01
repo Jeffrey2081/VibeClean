@@ -178,6 +178,55 @@
                     <button class="btn-copy-adb" id="btn-copy-adb">📋 Copy Full ADB Shell One-Liner</button>
                 </div>
 
+                <!-- BATTERY & QUICK DOZE OPTIMIZER SHIELD CARD -->
+                <div class="card liquid-glass-card battery-shield-card">
+                    <div class="card-header-row">
+                        <div class="header-title-wrap">
+                            <span class="card-icon">🔋</span>
+                            <div>
+                                <h3 class="card-title">Battery & Doze Shield</h3>
+                                <p class="card-subtitle">Quick Doze deep sleep, background radio scans & wakelock blocker</p>
+                            </div>
+                        </div>
+                        <span class="badge-battery-shield" id="battery-shield-badge">Tuning Ready</span>
+                    </div>
+
+                    <div class="battery-features-grid">
+                        <div class="battery-feature-item">
+                            <span class="feat-icon">⚡</span>
+                            <div class="feat-info">
+                                <strong>Quick Doze Mode</strong>
+                                <small>Instant deep sleep on screen-off (0s delay)</small>
+                            </div>
+                        </div>
+                        <div class="battery-feature-item">
+                            <span class="feat-icon">📡</span>
+                            <div class="feat-info">
+                                <strong>Radio Drain Shield</strong>
+                                <small>Stops Wi-Fi/BLE beacon & cell standby drain</small>
+                            </div>
+                        </div>
+                        <div class="battery-feature-item">
+                            <span class="feat-icon">🛑</span>
+                            <div class="feat-info">
+                                <strong>Wakelock Blocker</strong>
+                                <small>Restricts heavy background apps (Instagram, etc.)</small>
+                            </div>
+                        </div>
+                        <div class="battery-feature-item">
+                            <span class="feat-icon">💨</span>
+                            <div class="feat-info">
+                                <strong>GPU 0.5x Scale</strong>
+                                <small>Lowers graphics overhead & heat</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-battery-shield-apply" id="btn-apply-battery-shield">
+                        🛡️ Apply Battery Optimization Shield
+                    </button>
+                </div>
+
                 <!-- Quick Category Preview Grid -->
                 <div class="section-title">Clean Summary</div>
                 <div class="category-grid">
@@ -237,13 +286,13 @@
                             <span class="card-icon">🖼️</span>
                             <div>
                                 <h3 class="card-title">Gallery & Thumbnails Deep Purge</h3>
-                                <p class="card-subtitle">Purge .thumbnails, .thumbdata, and hidden media trash (S26 / One UI)</p>
+                                <p class="card-subtitle">Purge .thumbnails, .thumbdata & sync Android System Storage (S26 / One UI)</p>
                             </div>
                         </div>
-                        <button class="btn-mini-liquid" id="btn-purge-gallery-thumbs">🧹 Purge</button>
+                        <button class="btn-mini-liquid" id="btn-purge-gallery-thumbs">🧹 Purge & Sync</button>
                     </div>
                     <div class="gallery-purge-info">
-                        <span id="gallery-purge-status">Safe deep-clean for orphaned thumbnail indexes, preview caches & trashed media</span>
+                        <span id="gallery-purge-status">Wipes .thumbnails, truncates .thumbdata, and forces Android MediaStore to recalculate & update free space in Settings.</span>
                     </div>
                 </div>
 
