@@ -308,67 +308,95 @@ public class TurboShellEngine {
         return res;
     }
 
-    // 7. Battery Optimization Suite (Quick Doze, Radio Scanner Fixes, Wakelock Restrictions & Adaptive Battery)
+    // 7. Battery Optimization Suite (Selective or Full)
     public JSONObject applyBatteryOptimizationSuite() {
+        List<String> all = new ArrayList<>();
+        all.add("quick_doze");
+        all.add("wifi_scan");
+        all.add("ble_scan");
+        all.add("mobile_data_standby");
+        all.add("wakelock_shield");
+        all.add("anim_scale");
+        all.add("error_telemetry");
+        all.add("adaptive_battery");
+        return applyCustomBatteryOptimizations(all);
+    }
+
+    public JSONObject applyCustomBatteryOptimizations(List<String> selectedOptions) {
         JSONObject res = new JSONObject();
         List<String> actions = new ArrayList<>();
-
-        // 1. Quick Doze: Immediate Deep Sleep when screen is off
-        String dozeCmd = "settings put global device_idle_constants \"quick_doze_delay_to=0,sensing_to=0,locating_to=0,motion_inactive_to=0,light_after_inactive_to=0,inactive_to=10000\"";
-        runShellCommand(dozeCmd);
-        actions.add("⚡ Quick Doze Activated: Immediate deep sleep on screen-off");
-
-        // 2. Radio & Background Location Scanners
-        String radioCmd = "settings put global wifi_scan_always_enabled 0 && " +
-                          "settings put global ble_scan_always_enabled 0 && " +
-                          "settings put global mobile_data_always_on 0 && " +
-                          "settings put global send_action_app_error 0";
-        runShellCommand(radioCmd);
-        actions.add("📡 Background Radio & Location Scanners Disabled (Wi-Fi/BLE beacons stopped)");
-
-        // 3. App Standby & Adaptive Battery
-        String adaptiveCmd = "settings put global app_standby_enabled 1 && " +
-                             "settings put global adaptive_battery_management_enabled 1";
-        runShellCommand(adaptiveCmd);
-        actions.add("🔋 Android Adaptive Battery & Aggressive App Standby Enabled");
-
-        // 4. GPU & Animation Tuning
-        String animCmd = "settings put global window_animation_scale 0.5 && " +
-                         "settings put global transition_animation_scale 0.5 && " +
-                         "settings put global animator_duration_scale 0.5";
-        runShellCommand(animCmd);
-        actions.add("💨 Animation & GPU Overhead Tuned to 0.5x");
-
-        // 5. Restrict background drainers and wakelocks
-        String[] heavyDrainers = new String[]{
-                "com.instagram.android",
-                "com.snapchat.android",
-                "com.facebook.katana",
-                "com.zhiliaoapp.musically",
-                "app.morphe.android.apps.photos"
-        };
-        PackageManager pm = context.getPackageManager();
         int restrictedCount = 0;
-        for (String pkg : heavyDrainers) {
-            try {
-                pm.getApplicationInfo(pkg, 0);
-                String restrictCmd = "am set-standby-bucket " + pkg + " restricted 2>/dev/null; " +
-                                     "cmd appops set " + pkg + " RUN_IN_BACKGROUND ignore 2>/dev/null; " +
-                                     "cmd appops set " + pkg + " RUN_ANY_IN_BACKGROUND ignore 2>/dev/null; " +
-                                     "cmd appops set " + pkg + " WAKE_LOCK ignore 2>/dev/null";
-                runShellCommand(restrictCmd);
-                restrictedCount++;
-            } catch (Exception ignored) {}
+
+        if (selectedOptions.contains("quick_doze")) {
+            String dozeCmd = "settings put global device_idle_constants \"quick_doze_delay_to=0,sensing_to=0,locating_to=0,motion_inactive_to=0,light_after_inactive_to=0,inactive_to=10000\"";
+            runShellCommand(dozeCmd);
+            actions.add("⚡ Quick Doze: Immediate deep sleep on screen-off");
         }
-        actions.add("🛑 Wakelock Shield: Put " + restrictedCount + " heavy background drainers into restricted bucket");
+
+        if (selectedOptions.contains("wifi_scan")) {
+            runShellCommand("settings put global wifi_scan_always_enabled 0");
+            actions.add("📶 Wi-Fi Background Scanning: Disabled");
+        }
+
+        if (selectedOptions.contains("ble_scan")) {
+            runShellCommand("settings put global ble_scan_always_enabled 0");
+            actions.add("📡 Bluetooth LE Background Scanning: Disabled");
+        }
+
+        if (selectedOptions.contains("mobile_data_standby")) {
+            runShellCommand("settings put global mobile_data_always_on 0");
+            actions.add("🔋 Mobile Data Standby on Wi-Fi: Disabled");
+        }
+
+        if (selectedOptions.contains("error_telemetry")) {
+            runShellCommand("settings put global send_action_app_error 0");
+            actions.add("🛡️ OS Error Telemetry: Disabled");
+        }
+
+        if (selectedOptions.contains("adaptive_battery")) {
+            runShellCommand("settings put global app_standby_enabled 1 && settings put global adaptive_battery_management_enabled 1");
+            actions.add("🤖 AI Adaptive Battery: Enabled");
+        }
+
+        if (selectedOptions.contains("anim_scale")) {
+            String animCmd = "settings put global window_animation_scale 0.5 && " +
+                             "settings put global transition_animation_scale 0.5 && " +
+                             "settings put global animator_duration_scale 0.5";
+            runShellCommand(animCmd);
+            actions.add("💨 Snappy UI: Animations tuned to 0.5x");
+        }
+
+        if (selectedOptions.contains("wakelock_shield")) {
+            String[] heavyDrainers = new String[]{
+                    "com.instagram.android",
+                    "com.snapchat.android",
+                    "com.facebook.katana",
+                    "com.zhiliaoapp.musically",
+                    "app.morphe.android.apps.photos"
+            };
+            PackageManager pm = context.getPackageManager();
+            for (String pkg : heavyDrainers) {
+                try {
+                    pm.getApplicationInfo(pkg, 0);
+                    String restrictCmd = "am set-standby-bucket " + pkg + " restricted 2>/dev/null; " +
+                                         "cmd appops set " + pkg + " RUN_IN_BACKGROUND ignore 2>/dev/null; " +
+                                         "cmd appops set " + pkg + " RUN_ANY_IN_BACKGROUND ignore 2>/dev/null; " +
+                                         "cmd appops set " + pkg + " WAKE_LOCK ignore 2>/dev/null";
+                    runShellCommand(restrictCmd);
+                    restrictedCount++;
+                } catch (Exception ignored) {}
+            }
+            actions.add("🛑 Wakelock Shield: Restricted background activity for " + restrictedCount + " heavy apps");
+        }
 
         try {
             res.put("success", true);
+            res.put("appliedCount", actions.size());
             res.put("restrictedApps", restrictedCount);
             JSONArray arr = new JSONArray();
             for (String a : actions) arr.put(a);
             res.put("actions", arr);
-            res.put("message", "Battery Optimization Suite successfully applied!");
+            res.put("message", "Applied " + actions.size() + " battery optimizations successfully!");
         } catch (Exception ignored) {}
 
         return res;
@@ -381,16 +409,36 @@ public class TurboShellEngine {
             boolean quickDoze = dozeOut.contains("quick_doze_delay_to=0");
 
             String wifiScan = runShellCommand("settings get global wifi_scan_always_enabled");
+            boolean wifiScanOff = "0".equals(wifiScan.trim());
+
             String bleScan = runShellCommand("settings get global ble_scan_always_enabled");
-            boolean radiosClean = "0".equals(wifiScan.trim()) && "0".equals(bleScan.trim());
+            boolean bleScanOff = "0".equals(bleScan.trim());
+
+            String mobileData = runShellCommand("settings get global mobile_data_always_on");
+            boolean mobileDataStandbyOff = "0".equals(mobileData.trim());
+
+            String errorTele = runShellCommand("settings get global send_action_app_error");
+            boolean errorTeleOff = "0".equals(errorTele.trim());
 
             String adaptive = runShellCommand("settings get global adaptive_battery_management_enabled");
             boolean adaptiveOn = "1".equals(adaptive.trim());
 
+            String animScale = runShellCommand("settings get global window_animation_scale");
+            boolean animScaled = animScale.contains("0.5");
+
+            obj.put("quick_doze", quickDoze);
+            obj.put("wifi_scan", wifiScanOff);
+            obj.put("ble_scan", bleScanOff);
+            obj.put("mobile_data_standby", mobileDataStandbyOff);
+            obj.put("error_telemetry", errorTeleOff);
+            obj.put("adaptive_battery", adaptiveOn);
+            obj.put("anim_scale", animScaled);
+
+            // Backward compatibility
             obj.put("quickDozeActive", quickDoze);
-            obj.put("radiosOptimized", radiosClean);
+            obj.put("radiosOptimized", wifiScanOff && bleScanOff);
             obj.put("adaptiveBatteryActive", adaptiveOn);
-            obj.put("isOptimized", quickDoze && radiosClean);
+            obj.put("isOptimized", quickDoze && wifiScanOff);
         } catch (Exception e) {
             Log.e(TAG, "Error getting battery optimization status", e);
         }
@@ -425,7 +473,7 @@ public class TurboShellEngine {
 
         if (listener != null) {
             listener.onProgress("Initializing 1-Tap Auto Optimizer...", 5);
-            listener.onLog("⚡ Starting VibeClean Auto Optimization Pipeline...");
+            listener.onLog("⚡ Starting Auto Optimization Pipeline...");
         }
 
         // Step 1: System Cache Trimming (pm trim-caches 999G)
@@ -528,7 +576,7 @@ public class TurboShellEngine {
 
     // Generate Full ADB Shell One-Liner Script for non-root users
     public String getAdbCommandScript() {
-        return "# VibeClean Turbo Optimization Suite\n" +
+        return "# Android Turbo Optimization Suite\n" +
                 "pm trim-caches 999G\n" +
                 "sm fstrim\n" +
                 "cmd package compile -m speed-profile -a\n" +

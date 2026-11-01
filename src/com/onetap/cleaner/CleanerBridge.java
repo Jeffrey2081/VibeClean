@@ -115,42 +115,30 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     public void cleanJunk(String categoryIdsJson) {
         new Thread(() -> {
             try {
-                if (lastScanResult == null) {
-                    runOnJs("window.onCleanComplete && window.onCleanComplete({'bytesFreed':0, 'filesDeleted':0});");
-                    return;
+                JSONArray selectedCats = new JSONArray(categoryIdsJson);
+                List<String> catIds = new ArrayList<>();
+                for (int i = 0; i < selectedCats.length(); i++) {
+                    catIds.add(selectedCats.getString(i));
                 }
 
-                JSONArray selectedCats = new JSONArray(categoryIdsJson);
-                List<String> filesToDelete = new ArrayList<>();
+                JSONObject cleanRes = engine.cleanCategories(catIds);
 
-                JSONArray cats = lastScanResult.optJSONArray("categories");
-                if (cats != null) {
-                    for (int i = 0; i < cats.length(); i++) {
-                        JSONObject cat = cats.getJSONObject(i);
-                        String id = cat.getString("id");
-
-                        boolean isSelected = false;
-                        for (int j = 0; j < selectedCats.length(); j++) {
-                            if (selectedCats.getString(j).equals(id)) {
-                                isSelected = true;
-                                break;
-                            }
-                        }
-
-                        if (isSelected) {
-                            JSONArray sampleFiles = cat.optJSONArray("sampleFiles");
-                            if (sampleFiles != null) {
-                                for (int k = 0; k < sampleFiles.length(); k++) {
-                                    filesToDelete.add(sampleFiles.getString(k));
-                                }
+                // Update lastScanResult if present so cleaned categories show 0 bytes immediately
+                if (lastScanResult != null) {
+                    JSONArray cats = lastScanResult.optJSONArray("categories");
+                    if (cats != null) {
+                        for (int i = 0; i < cats.length(); i++) {
+                            JSONObject cat = cats.getJSONObject(i);
+                            if (catIds.contains(cat.getString("id"))) {
+                                cat.put("totalBytes", 0);
+                                cat.put("fileCount", 0);
+                                cat.put("sampleFiles", new JSONArray());
                             }
                         }
                     }
                 }
 
-                JSONObject cleanRes = engine.cleanFiles(filesToDelete);
                 vibrate(100);
-
                 final String resultJson = cleanRes.toString();
                 runOnJs("window.onCleanComplete && window.onCleanComplete(" + resultJson + ");");
 
@@ -435,6 +423,22 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     public String applyBatteryOptimizationSuite() {
         vibrate(100);
         return turboEngine.applyBatteryOptimizationSuite().toString();
+    }
+
+    @JavascriptInterface
+    public String applyCustomBatteryOptimizations(String selectedKeysJson) {
+        try {
+            JSONArray arr = new JSONArray(selectedKeysJson);
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < arr.length(); i++) {
+                list.add(arr.getString(i));
+            }
+            vibrate(100);
+            return turboEngine.applyCustomBatteryOptimizations(list).toString();
+        } catch (Exception e) {
+            Log.e(TAG, "Error applying custom battery optimizations", e);
+            return "{\"success\":false}";
+        }
     }
 
     @JavascriptInterface

@@ -16,7 +16,6 @@
                     <div class="title-group">
                         <span class="app-title">VibeClean</span>
                         <span class="pro-tag">PRO</span>
-                        <span class="vibe-tag">VIBE CODED ✨</span>
                     </div>
                 </div>
             </div>
@@ -94,7 +93,7 @@
                         <span class="hero-glow"></span>
                         <div class="hero-btn-content">
                             <span class="hero-icon">⚡</span>
-                            <span class="hero-text">1-TAP VIBE CLEAN</span>
+                            <span class="hero-text">1-TAP CLEAN</span>
                             <span class="hero-subtext">Instant Cache & RAM Optimization</span>
                         </div>
                     </button>
@@ -178,52 +177,159 @@
                     <button class="btn-copy-adb" id="btn-copy-adb">📋 Copy Full ADB Shell One-Liner</button>
                 </div>
 
-                <!-- BATTERY & QUICK DOZE OPTIMIZER SHIELD CARD -->
+                <!-- BATTERY & QUICK DOZE OPTIMIZER SUITE -->
                 <div class="card liquid-glass-card battery-shield-card">
                     <div class="card-header-row">
                         <div class="header-title-wrap">
                             <span class="card-icon">🔋</span>
                             <div>
-                                <h3 class="card-title">Battery & Doze Shield</h3>
-                                <p class="card-subtitle">Quick Doze deep sleep, background radio scans & wakelock blocker</p>
+                                <h3 class="card-title">Battery Optimization Suite</h3>
+                                <p class="card-subtitle">Customizable deep sleep, radio control & wakelock blocker with trade-off explanations</p>
                             </div>
                         </div>
                         <span class="badge-battery-shield" id="battery-shield-badge">Tuning Ready</span>
                     </div>
 
-                    <div class="battery-features-grid">
-                        <div class="battery-feature-item">
-                            <span class="feat-icon">⚡</span>
-                            <div class="feat-info">
-                                <strong>Quick Doze Mode</strong>
-                                <small>Instant deep sleep on screen-off (0s delay)</small>
+                    <div class="bat-opt-toolbar">
+                        <label class="bat-opt-select-all">
+                            <input type="checkbox" id="toggle-bat-select-all" checked>
+                            <span>Select All</span>
+                        </label>
+                        <span class="bat-opt-counter" id="bat-opt-counter-text">Selected: 8 / 8</span>
+                    </div>
+
+                    <div class="bat-opt-list" id="bat-opt-list">
+                        <!-- Option 1: Quick Doze -->
+                        <div class="bat-opt-card" data-key="quick_doze">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="quick_doze" checked>
+                                    <span class="bat-opt-title">⚡ Quick Doze Mode</span>
+                                </label>
+                                <span class="bat-opt-badge recommended">Recommended</span>
+                            </div>
+                            <p class="bat-opt-desc">Forces zero-delay deep sleep when screen is off, reducing standby battery consumption to ~0.2%/hr.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Non-priority background notifications (social feeds) may wait until screen-on. Calls, SMS, and alarms are never delayed.</span>
                             </div>
                         </div>
-                        <div class="battery-feature-item">
-                            <span class="feat-icon">📡</span>
-                            <div class="feat-info">
-                                <strong>Radio Drain Shield</strong>
-                                <small>Stops Wi-Fi/BLE beacon & cell standby drain</small>
+
+                        <!-- Option 2: Wi-Fi Background Scanning -->
+                        <div class="bat-opt-card" data-key="wifi_scan">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="wifi_scan" checked>
+                                    <span class="bat-opt-title">📶 Wi-Fi Background Scanning</span>
+                                </label>
+                                <span class="bat-opt-badge">Low Impact</span>
+                            </div>
+                            <p class="bat-opt-desc">Stops system services and apps from turning on Wi-Fi chips in the background to scan for nearby routers.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Indoor location positioning may take 1-2 seconds longer when GPS satellites are obscured indoors.</span>
                             </div>
                         </div>
-                        <div class="battery-feature-item">
-                            <span class="feat-icon">🛑</span>
-                            <div class="feat-info">
-                                <strong>Wakelock Blocker</strong>
-                                <small>Restricts heavy background apps (Instagram, etc.)</small>
+
+                        <!-- Option 3: Bluetooth LE Scanning -->
+                        <div class="bat-opt-card" data-key="ble_scan">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="ble_scan" checked>
+                                    <span class="bat-opt-title">📡 Bluetooth LE Beacon Scanning</span>
+                                </label>
+                                <span class="bat-opt-badge">Low Impact</span>
+                            </div>
+                            <p class="bat-opt-desc">Disables constant low-energy Bluetooth beacon polling when Bluetooth is turned off.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Un-paired nearby smart accessories or Quick Share popups won't show instant discovery banners until you open Bluetooth.</span>
                             </div>
                         </div>
-                        <div class="battery-feature-item">
-                            <span class="feat-icon">💨</span>
-                            <div class="feat-info">
-                                <strong>GPU 0.5x Scale</strong>
-                                <small>Lowers graphics overhead & heat</small>
+
+                        <!-- Option 4: Mobile Data Standby -->
+                        <div class="bat-opt-card" data-key="mobile_data_standby">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="mobile_data_standby" checked>
+                                    <span class="bat-opt-title">🔋 Mobile Data Standby on Wi-Fi</span>
+                                </label>
+                                <span class="bat-opt-badge recommended">Recommended</span>
+                            </div>
+                            <p class="bat-opt-desc">Prevents cellular radio from constantly transmitting packets while connected to strong Wi-Fi.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Switching over to 4G/5G mobile data when walking out of Wi-Fi range takes 1-2 seconds instead of instantaneous handoff.</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 5: Wakelock Shield -->
+                        <div class="bat-opt-card" data-key="wakelock_shield">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="wakelock_shield" checked>
+                                    <span class="bat-opt-title">🛑 Wakelock Shield (Social Apps)</span>
+                                </label>
+                                <span class="bat-opt-badge recommended">High Savings</span>
+                            </div>
+                            <p class="bat-opt-desc">Restricts background CPU wakelocks and sets restricted standby buckets for Instagram, Snapchat, Facebook, and TikTok.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Stories and feeds won't preload while phone is locked; they will refresh when you tap and open the app.</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 6: 0.5x UI Animations -->
+                        <div class="bat-opt-card" data-key="anim_scale">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="anim_scale" checked>
+                                    <span class="bat-opt-title">💨 Snappy UI (0.5x Animation Scale)</span>
+                                </label>
+                                <span class="bat-opt-badge">Snappy</span>
+                            </div>
+                            <p class="bat-opt-desc">Cuts window and transition animation duration in half, reducing GPU rendering power and heat.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>UI transitions are fast and instantaneous rather than long, slow cinematic animations.</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 7: Error Telemetry -->
+                        <div class="bat-opt-card" data-key="error_telemetry">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="error_telemetry" checked>
+                                    <span class="bat-opt-title">🛡️ System Error Telemetry</span>
+                                </label>
+                                <span class="bat-opt-badge">Privacy & Power</span>
+                            </div>
+                            <p class="bat-opt-desc">Stops background generation and cellular uploading of system crash dumps to Google/OEM telemetry servers.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>App crash diagnostics will not be automatically sent to operating system developers.</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 8: Adaptive Battery -->
+                        <div class="bat-opt-card" data-key="adaptive_battery">
+                            <div class="bat-opt-header">
+                                <label class="bat-opt-check-label">
+                                    <input type="checkbox" class="bat-opt-check" data-key="adaptive_battery" checked>
+                                    <span class="bat-opt-title">🤖 AI Adaptive Battery Management</span>
+                                </label>
+                                <span class="bat-opt-badge recommended">Recommended</span>
+                            </div>
+                            <p class="bat-opt-desc">Uses on-device usage patterns to throttle background CPU execution for rarely-opened apps.</p>
+                            <div class="bat-opt-drawback">
+                                <span class="drawback-tag">⚠️ Drawback:</span>
+                                <span>Apps that have not been opened for several days will have background syncing delayed until opened.</span>
                             </div>
                         </div>
                     </div>
 
                     <button class="btn-battery-shield-apply" id="btn-apply-battery-shield">
-                        🛡️ Apply Battery Optimization Shield
+                        🛡️ Apply Selected Optimizations (<span id="bat-opt-count">8</span>)
                     </button>
                 </div>
 
@@ -569,7 +675,7 @@
                                     <span class="mock-val" id="mock-ram-val">68% Used</span>
                                 </div>
                             </div>
-                            <button class="mock-clean-btn" id="btn-test-widget-clean">⚡ VIBE BOOST</button>
+                            <button class="mock-clean-btn" id="btn-test-widget-clean">⚡ BOOST</button>
                         </div>
                     </div>
 

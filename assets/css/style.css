@@ -1858,7 +1858,7 @@ input:checked + .slider:before {
 }
 
 /* ==============================================================================
-   Battery Drain & Quick Doze Optimizer Shield Styles
+   Battery Drain & Quick Doze Optimizer Suite Styles
    ============================================================================== */
 
 .battery-shield-card {
@@ -1878,43 +1878,129 @@ input:checked + .slider:before {
     border-radius: 6px;
 }
 
-.battery-features-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 12px 0;
-}
-
-.battery-feature-item {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    padding: 10px;
+.bat-opt-toolbar {
     display: flex;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bat-opt-select-all {
+    display: flex;
+    align-items: center;
     gap: 8px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #FFF;
+    cursor: pointer;
 }
 
-.feat-icon {
-    font-size: 1.2rem;
-    line-height: 1;
+.bat-opt-select-all input {
+    accent-color: var(--accent-emerald);
+    width: 16px;
+    height: 16px;
 }
 
-.feat-info {
+.bat-opt-counter {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-emerald);
+    background: rgba(0, 230, 118, 0.12);
+    border: 1px solid rgba(0, 230, 118, 0.25);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.bat-opt-list {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
 }
 
-.feat-info strong {
-    font-size: 0.76rem;
+.bat-opt-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 11px 12px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.bat-opt-card.selected {
+    border-color: rgba(0, 230, 118, 0.3);
+    background: rgba(0, 230, 118, 0.04);
+}
+
+.bat-opt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.bat-opt-check-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.bat-opt-check {
+    accent-color: var(--accent-emerald);
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+.bat-opt-title {
+    font-size: 0.78rem;
+    font-weight: 700;
     color: #FFF;
 }
 
-.feat-info small {
-    font-size: 0.64rem;
+.bat-opt-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
     color: var(--text-secondary);
-    margin-top: 2px;
-    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.bat-opt-badge.recommended {
+    background: rgba(0, 230, 118, 0.15);
+    color: #00E676;
+    border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.bat-opt-desc {
+    font-size: 0.69rem;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    margin: 5px 0 6px 0;
+}
+
+.bat-opt-drawback {
+    font-size: 0.66rem;
+    color: #FFC107;
+    background: rgba(255, 193, 7, 0.08);
+    border-left: 3px solid #FFC107;
+    padding: 5px 8px;
+    border-radius: 4px;
+    line-height: 1.3;
+    display: flex;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+.drawback-tag {
+    font-weight: 800;
+    white-space: nowrap;
+    color: #FFD54F;
 }
 
 .btn-battery-shield-apply {

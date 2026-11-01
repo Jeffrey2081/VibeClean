@@ -30,6 +30,7 @@ import java.util.Set;
 public class CleanerEngine {
     private static final String TAG = "CleanerEngine";
     private final Context context;
+    private final java.util.Map<String, List<String>> categoryFilesMap = new java.util.concurrent.ConcurrentHashMap<>();
 
     public interface ScanProgressListener {
         void onProgress(String currentFile, int percent, long bytesFound);
@@ -288,6 +289,14 @@ public class CleanerEngine {
             int grandTotalFiles = cacheCat.fileCount + residualCat.fileCount + apkCat.fileCount
                     + thumbCat.fileCount + emptyDirCat.fileCount + sdLeftoversCat.fileCount;
 
+            // Retain full file lists per category for thorough cleaning
+            categoryFilesMap.put(cacheCat.id, new ArrayList<>(cacheCat.filePaths));
+            categoryFilesMap.put(residualCat.id, new ArrayList<>(residualCat.filePaths));
+            categoryFilesMap.put(apkCat.id, new ArrayList<>(apkCat.filePaths));
+            categoryFilesMap.put(thumbCat.id, new ArrayList<>(thumbCat.filePaths));
+            categoryFilesMap.put(emptyDirCat.id, new ArrayList<>(emptyDirCat.filePaths));
+            categoryFilesMap.put(sdLeftoversCat.id, new ArrayList<>(sdLeftoversCat.filePaths));
+
             result.put("categories", categories);
             result.put("totalBytes", grandTotalBytes);
             result.put("totalFiles", grandTotalFiles);
@@ -397,6 +406,9 @@ public class CleanerEngine {
         if (files == null) return;
         for (File f : files) {
             String name = f.getName().toLowerCase();
+            if (name.equals(".database_uuid") || name.equals(".nomedia") || name.equals(".database_uuid-journal")) {
+                continue;
+            }
             if (f.isDirectory()) {
                 if (name.equals(".thumbnails") || name.equals("thumbnails") ||
                     name.equals(".thumb") || name.equals("thumbs") ||
@@ -457,6 +469,10 @@ public class CleanerEngine {
         if (files == null) return;
 
         for (File f : files) {
+            String name = f.getName().toLowerCase();
+            if (name.equals(".database_uuid") || name.equals(".nomedia") || name.equals(".database_uuid-journal")) {
+                continue;
+            }
             if (f.isDirectory()) {
                 scanDirectoryRecursively(f, category);
             } else {
@@ -466,6 +482,108 @@ public class CleanerEngine {
                 category.filePaths.add(f.getAbsolutePath());
             }
         }
+    }
+
+    public JSONObject cleanCategories(List<String> categoryIds) {
+        JSONObject res = new JSONObject();
+        long bytesFreed = 0;
+        int filesDeleted = 0;
+        int errors = 0;
+
+        // If thumbnails selected, force-stop gallery apps first to break file locks on .thumbdata
+        if (categoryIds.contains("thumbnails")) {
+            try {
+                ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    am.killBackgroundProcesses("com.sec.android.gallery3d");
+                    am.killBackgroundProcesses("com.google.android.apps.photos");
+                    am.killBackgroundProcesses("com.samsung.android.gallery.preview");
+                }
+            } catch (Exception ignored) {}
+
+            JSONObject purgeRes = purgeGalleryThumbnailsWithSystemRescan();
+            bytesFreed += purgeRes.optLong("bytesFreed", 0);
+            filesDeleted += purgeRes.optInt("filesDeleted", 0);
+        }
+
+        List<String> pathsToDelete = new ArrayList<>();
+        for (String catId : categoryIds) {
+            List<String> paths = categoryFilesMap.get(catId);
+            if (paths != null) {
+                pathsToDelete.addAll(paths);
+            }
+        }
+
+        for (String path : pathsToDelete) {
+            try {
+                File file = new File(path);
+                if (file.exists()) {
+                    long size = file.isDirectory() ? getDirSize(file) : file.length();
+                    boolean deleted = deleteRecursively(file);
+                    if (deleted) {
+                        bytesFreed += size;
+                        filesDeleted++;
+                    } else {
+                        // If file locked by system daemon, truncate to 0 bytes so it takes 0 storage
+                        if (file.isFile()) {
+                            try {
+                                java.io.FileOutputStream fos = new java.io.FileOutputStream(file);
+                                fos.getChannel().truncate(0);
+                                fos.close();
+                                bytesFreed += size;
+                                filesDeleted++;
+                            } catch (Exception e) {
+                                errors++;
+                            }
+                        } else {
+                            errors++;
+                        }
+                    }
+
+                    // Delete MediaStore entry if media/thumbnail
+                    try {
+                        if (path.contains("DCIM") || path.contains("Pictures") ||
+                            path.contains("thumbnails") || path.contains(".trash") ||
+                            path.contains(".thumbdata")) {
+                            context.getContentResolver().delete(
+                                    MediaStore.Files.getContentUri("external"),
+                                    MediaStore.MediaColumns.DATA + "=?",
+                                    new String[]{path});
+                        }
+                    } catch (Exception ignored) {}
+                }
+            } catch (Exception e) {
+                errors++;
+            }
+        }
+
+        // Clear files from the map for the cleaned categories
+        for (String catId : categoryIds) {
+            List<String> list = categoryFilesMap.get(catId);
+            if (list != null) list.clear();
+        }
+
+        try {
+            res.put("bytesFreed", bytesFreed);
+            res.put("filesDeleted", filesDeleted);
+            res.put("errors", errors);
+        } catch (Exception ignored) {}
+
+        // Rescan system media storage so deleted files update in Android Settings immediately
+        try {
+            File ext = Environment.getExternalStorageDirectory();
+            if (ext != null && ext.exists()) {
+                String[] scanPaths = new String[]{
+                        new File(ext, "DCIM").getAbsolutePath(),
+                        new File(ext, "Pictures").getAbsolutePath(),
+                        new File(ext, "Movies").getAbsolutePath(),
+                        new File(ext, "Download").getAbsolutePath()
+                };
+                MediaScannerConnection.scanFile(context, scanPaths, null, null);
+            }
+        } catch (Exception ignored) {}
+
+        return res;
     }
 
     public JSONObject cleanFiles(List<String> pathsToDelete) {

@@ -38,17 +38,31 @@ A single prominent hero button that sequentially triggers all high-performance o
 
 ### 3. 🖼️ Samsung Galaxy (S20-S26) & Android Gallery Thumbnail Purge & System Storage Sync
 Fixes the notorious Android 11-16 scoped storage issue where thumbnail caches don't get cleared or fail to update in system settings:
-- **Daemon Unlock**: Force-stops `com.sec.android.gallery3d` and media providers so locked file descriptors on `.thumbdata` files are released.
-- **Deep Disk Wipe & Truncation**: Recursively scans and purges `/sdcard/DCIM/.thumbnails`, `/sdcard/Pictures/.thumbnails`, `/sdcard/Movies/.thumbnails`, `/sdcard/Download/.thumbnails`, and truncates locked `.thumbdata3--*` and `.thumbdata4--*` files to 0 bytes.
+- **Volume Marker Whitelisting**: Explicitly ignores un-deletable OS filesystem markers like `.database_uuid` (36 bytes) and `.nomedia` so thumbnail category sizes don't remain stuck at phantom non-zero byte values.
+- **Full File Path Mapping**: Replaces truncated preview lists with complete filesystem path tracking, ensuring all thumbnails and orphan previews in `.thumbnails` folders are deleted when selected from the category dropdown or purged via dedicated action.
+- **Daemon Unlock & File Truncation**: Force-stops `com.sec.android.gallery3d` and media providers so locked file descriptors on `.thumbdata` files are released; truncates active locked files to 0 bytes so they consume zero storage.
 - **MediaStore Database Reconciler**: Runs SQL deletes on `content://media/external/file` and `MediaStore.Images.Media` to eliminate stale thumbnail references.
-- **System Storage Cache Sync**: Triggers `MediaScannerConnection.scanFile`, broadcasts `MEDIA_SCANNER_SCAN_FILE`, and executes `pm trim-caches 999G` so Android System and Settings -> Storage immediately recalculate and reflect the freed space!
+- **Instant UI Reconciliation & Rescan**: Immediately updates UI sizes to `0 B` upon cleaning and triggers `MediaScannerConnection.scanFile`, broadcasts `MEDIA_SCANNER_SCAN_FILE`, and executes `pm trim-caches 999G` so Android System and Settings -> Storage immediately recalculate and reflect the freed space!
 
-### 4. 🔋 Battery & Quick Doze Optimization Shield
-Derived from deep kernel and ADB power management tuning:
-- **⚡ Quick Doze Mode**: Tunes `device_idle_constants` (`quick_doze_delay_to=0`) to plunge the device into deep sleep the millisecond the screen turns off, saving 15–30% idle battery overnight.
-- **📡 Background Radio Shield**: Disables continuous Wi-Fi background location beacons (`wifi_scan_always_enabled=0`) and Bluetooth LE scanning (`ble_scan_always_enabled=0`), plus disables mobile data always-on while on Wi-Fi.
-- **🛑 Wakelock Shield & App Standby**: Automatically detects heavy background drainers (Instagram, Snapchat, Facebook, TikTok, backup loops) and sets their standby bucket to `restricted` while ignoring background execution (`RUN_IN_BACKGROUND ignore`) and background wakelocks (`WAKE_LOCK ignore`).
-- **💨 GPU & Animation Scaling (0.5x)**: Reduces window animation scale to 0.5x to reduce GPU wakeups, rendering overhead, and AP thermal throttling.
+### 4. 🔋 Granular Battery Optimization Suite (With Clear Tradeoffs & Drawbacks)
+A customizable battery suite allowing users to selectively choose which optimizations to apply, complete with clear technical explanations and explicit drawbacks for each:
+
+1. **⚡ Quick Doze Mode (Zero-Delay Deep Sleep)**: Tunes `device_idle_constants` (`quick_doze_delay_to=0`) to plunge the CPU into deep sleep immediately on screen-off (~0.2%/hr standby drain).
+   - *Drawback*: Non-priority background social notifications may wait until screen-on. Calls, SMS, and alarms are never delayed.
+2. **📶 Wi-Fi Background Scanning**: Stops system services and background apps from cycling Wi-Fi hardware to scan for nearby routers (`wifi_scan_always_enabled 0`).
+   - *Drawback*: Indoor map positioning may take 1-2 seconds longer when GPS satellites are blocked.
+3. **📡 Bluetooth LE Beacon Scanning**: Shuts off continuous low-energy Bluetooth radio beacon polling when Bluetooth is off (`ble_scan_always_enabled 0`).
+   - *Drawback*: Un-paired nearby smart accessories or Quick Share popups won't show instant discovery banners until you open Bluetooth.
+4. **🔋 Mobile Data Standby on Wi-Fi**: Prevents cellular modem from keeping active data links and sending packets while connected to strong Wi-Fi (`mobile_data_always_on 0`).
+   - *Drawback*: Switching over to 4G/5G mobile data when walking out of Wi-Fi range takes 1-2 seconds instead of instantaneous handoff.
+5. **🛑 Wakelock Shield (Social Apps)**: Sets standby buckets to `restricted` and blocks background CPU wakelocks (`WAKE_LOCK ignore`, `RUN_IN_BACKGROUND ignore`) for Instagram, Snapchat, Facebook, and TikTok.
+   - *Drawback*: Social feeds and stories will not preload while your phone is locked; they refresh when you open the app.
+6. **💨 Snappy UI (0.5x Animation Scale)**: Cuts window and transition animation duration in half (`0.5x`), reducing GPU rendering load, battery temperature, and frame drop.
+   - *Drawback*: UI transitions are rapid and snappy rather than long, slow cinematic animations.
+7. **🛡️ System Error Telemetry**: Disables automatic background packaging and cellular uploading of OS crash dumps to Google/OEM telemetry servers (`send_action_app_error 0`).
+   - *Drawback*: If an application crashes, crash logs will not be automatically uploaded to OS developer analytics.
+8. **🤖 AI Adaptive Battery Management**: Uses device intelligence to throttle background CPU execution for apps you haven't opened in days (`adaptive_battery_management_enabled 1`).
+   - *Drawback*: Rarely-used apps will have background syncing delayed until opened.
 
 ### 5. 🔋 True Battery Health State (Not Just Percent)
 - Queries Android `BatteryManager.EXTRA_HEALTH` and Linux/Samsung sysfs nodes (`/sys/class/power_supply/battery/health`, `fg_asoc`, `battery_cycle`).
