@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VibeClean PRO</string>
-    <string name="widget_name">VibeClean Widget</string>
+    <string name="widget_name">VibeClean 1-Tap Widget</string>
+    <string name="widget_system_stats_name">VibeClean System Stats</string>
+    <string name="widget_quick_pill_name">VibeClean Quick Pill</string>
     <string name="widget_clean_button">⚡ VIBE BOOST</string>
     <string name="widget_storage_label">Storage</string>
     <string name="widget_ram_label">RAM</string>

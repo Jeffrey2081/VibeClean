@@ -57,13 +57,15 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     @Override
     public void onProgress(String currentTask, int percent) {
         String clean = currentTask.replace("'", "\\'").replace("\"", "\\\"");
-        runOnJs("window.onAotProgress && window.onAotProgress('" + clean + "', " + percent + ");");
+        runOnJs("window.onAotProgress && window.onAotProgress('" + clean + "', " + percent + "); " +
+                "window.onAutoOptimizeProgress && window.onAutoOptimizeProgress('" + clean + "', " + percent + ");");
     }
 
     @Override
     public void onLog(String logLine) {
         String clean = logLine.replace("'", "\\'").replace("\"", "\\\"");
-        runOnJs("window.onAotLog && window.onAotLog('" + clean + "');");
+        runOnJs("window.onAotLog && window.onAotLog('" + clean + "'); " +
+                "window.onAutoOptimizeLog && window.onAutoOptimizeLog('" + clean + "');");
     }
 
     @Override
@@ -370,8 +372,28 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     }
 
     // =========================================================================
-    // Turbo Shell & AOT ART Optimization
+    // Turbo Shell, Auto Optimize & AOT ART Optimization
     // =========================================================================
+    @JavascriptInterface
+    public void runAutoOptimize() {
+        new Thread(() -> {
+            try {
+                JSONObject res = turboEngine.runAutoOptimizePipeline(this);
+                vibrate(120);
+                runOnJs("window.onAutoOptimizeComplete && window.onAutoOptimizeComplete(" + res.toString() + ");");
+            } catch (Exception e) {
+                Log.e(TAG, "Auto optimize error", e);
+                runOnJs("window.onAutoOptimizeComplete && window.onAutoOptimizeComplete({'success':false});");
+            }
+        }).start();
+    }
+
+    @JavascriptInterface
+    public String cleanSamsungGalleryJunk() {
+        vibrate(80);
+        return turboEngine.cleanSamsungGalleryAndThumbnails().toString();
+    }
+
     @JavascriptInterface
     public void runAotOptimization() {
         new Thread(() -> {

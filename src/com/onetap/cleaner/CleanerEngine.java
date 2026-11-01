@@ -10,15 +10,19 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class CleanerEngine {
@@ -126,6 +130,19 @@ public class CleanerEngine {
         return obj;
     }
 
+    private String readSysfsLine(String path) {
+        try {
+            File f = new File(path);
+            if (f.exists() && f.canRead()) {
+                BufferedReader br = new BufferedReader(new FileReader(f));
+                String line = br.readLine();
+                br.close();
+                if (line != null) return line.trim();
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
     public JSONObject getBatteryInfo() {
         JSONObject obj = new JSONObject();
         try {
@@ -137,15 +154,52 @@ public class CleanerEngine {
                 int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 int health = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, -1);
 
-                int batteryPct = (int) ((level / (float) scale) * 100);
+                int batteryPct = scale > 0 ? (int) ((level / (float) scale) * 100) : level;
                 float tempCelsius = temp / 10.0f;
                 boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                         status == BatteryManager.BATTERY_STATUS_FULL;
 
+                String healthCondition;
+                switch (health) {
+                    case BatteryManager.BATTERY_HEALTH_GOOD:
+                        healthCondition = "Good (Optimal)";
+                        break;
+                    case BatteryManager.BATTERY_HEALTH_OVERHEAT:
+                        healthCondition = "Overheating ⚠️";
+                        break;
+                    case BatteryManager.BATTERY_HEALTH_DEAD:
+                        healthCondition = "Dead ⚠️";
+                        break;
+                    case BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE:
+                        healthCondition = "Over Voltage ⚠️";
+                        break;
+                    case BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE:
+                        healthCondition = "Failure ⚠️";
+                        break;
+                    case BatteryManager.BATTERY_HEALTH_COLD:
+                        healthCondition = "Cold ❄️";
+                        break;
+                    default:
+                        healthCondition = "Good (Normal)";
+                        break;
+                }
+
+                // Check Samsung & Linux sysfs values
+                String sysHealth = readSysfsLine("/sys/class/power_supply/battery/health");
+                if (sysHealth != null && !sysHealth.isEmpty() && sysHealth.equalsIgnoreCase("good")) {
+                    healthCondition = "Good (Optimal)";
+                }
+                String sysAsoc = readSysfsLine("/sys/class/power_supply/battery/fg_asoc");
+                String sysCycle = readSysfsLine("/sys/class/power_supply/battery/battery_cycle");
+
                 obj.put("percent", batteryPct);
                 obj.put("temperature", tempCelsius);
                 obj.put("isCharging", isCharging);
-                obj.put("health", health == BatteryManager.BATTERY_HEALTH_GOOD ? "Good" : "Normal");
+                obj.put("health", healthCondition);
+                obj.put("healthCondition", healthCondition);
+                obj.put("asocRetention", sysAsoc != null ? sysAsoc + "%" : "100%");
+                obj.put("cycleCount", sysCycle != null ? sysCycle : "--");
+                obj.put("healthSummary", healthCondition + (tempCelsius > 0 ? " · " + String.format(Locale.US, "%.1f°C", tempCelsius) : ""));
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting Battery info", e);
@@ -246,6 +300,29 @@ public class CleanerEngine {
                                     JunkCategory emptyDirs, ScanProgressListener listener, long totalBytes) {
         if (root == null || !root.exists()) return;
 
+        // 1. Explicitly scan known Samsung S-series & Android Gallery / Thumbnail / Trash folders
+        File[] knownThumbDirs = new File[]{
+                new File(root, "DCIM/.thumbnails"),
+                new File(root, "DCIM/.thumb"),
+                new File(root, "Pictures/.thumbnails"),
+                new File(root, "Pictures/.thumb"),
+                new File(root, "Movies/.thumbnails"),
+                new File(root, "Download/.thumbnails"),
+                new File(root, "Music/.thumbnails"),
+                new File(root, ".thumbnails"),
+                new File(root, "DCIM/.trash"),
+                new File(root, "Pictures/.trash"),
+                new File(root, "Android/data/com.sec.android.gallery3d/cache"),
+                new File(root, "Android/data/com.sec.android.gallery3d/files/.trash"),
+                new File(root, "Android/data/com.samsung.android.gallery.preview"),
+                new File(root, "Android/data/com.google.android.apps.photos/cache")
+        };
+        for (File kd : knownThumbDirs) {
+            if (kd != null && kd.exists()) {
+                scanDirectoryRecursively(kd, thumbs);
+            }
+        }
+
         File[] files = root.listFiles();
         if (files == null) return;
 
@@ -254,14 +331,15 @@ public class CleanerEngine {
                 String name = file.getName();
                 // Skip Android/data already scanned or system mount points
                 if (name.equals("Android") || name.startsWith(".")) {
-                    if (name.equalsIgnoreCase(".thumbnails") || name.equalsIgnoreCase(".thumb")) {
+                    if (name.equalsIgnoreCase(".thumbnails") || name.equalsIgnoreCase(".thumb") || name.equalsIgnoreCase(".trash")) {
                         scanDirectoryRecursively(file, thumbs);
                     }
                     continue;
                 }
 
                 // Check for thumbnail folders
-                if (name.equalsIgnoreCase("thumbnails") || name.equalsIgnoreCase(".thumbnails")) {
+                if (name.equalsIgnoreCase("thumbnails") || name.equalsIgnoreCase(".thumbnails") ||
+                    name.equalsIgnoreCase("thumbs") || name.equalsIgnoreCase(".thumb")) {
                     scanDirectoryRecursively(file, thumbs);
                     continue;
                 }
@@ -274,15 +352,16 @@ public class CleanerEngine {
                     continue;
                 }
 
-                // Scan common junk folders
+                // Scan common junk and media folders
                 if (name.equalsIgnoreCase("Download") || name.equalsIgnoreCase("Downloads") ||
                     name.equalsIgnoreCase("temp") || name.equalsIgnoreCase("tmp")) {
                     scanGeneralFolder(file, residual, apks, thumbs, emptyDirs);
-                } else if (name.equalsIgnoreCase("DCIM") || name.equalsIgnoreCase("Pictures")) {
+                } else if (name.equalsIgnoreCase("DCIM") || name.equalsIgnoreCase("Pictures") ||
+                           name.equalsIgnoreCase("Movies") || name.equalsIgnoreCase("Documents")) {
                     scanMediaForThumbs(file, thumbs);
                 }
             } else {
-                checkSingleFile(file, residual, apks);
+                checkSingleFile(file, residual, apks, thumbs);
             }
         }
     }
@@ -299,13 +378,14 @@ public class CleanerEngine {
 
         for (File f : files) {
             if (f.isDirectory()) {
-                if (f.getName().equalsIgnoreCase(".thumbnails")) {
+                String dName = f.getName().toLowerCase();
+                if (dName.contains("thumb") || dName.equals(".trash") || dName.equals("trash")) {
                     scanDirectoryRecursively(f, thumbs);
                 } else {
                     scanGeneralFolder(f, residual, apks, thumbs, emptyDirs);
                 }
             } else {
-                checkSingleFile(f, residual, apks);
+                checkSingleFile(f, residual, apks, thumbs);
             }
         }
     }
@@ -314,17 +394,35 @@ public class CleanerEngine {
         File[] files = folder.listFiles();
         if (files == null) return;
         for (File f : files) {
+            String name = f.getName().toLowerCase();
             if (f.isDirectory()) {
-                if (f.getName().equalsIgnoreCase(".thumbnails") || f.getName().equalsIgnoreCase("thumbnails")) {
+                if (name.equals(".thumbnails") || name.equals("thumbnails") ||
+                    name.equals(".thumb") || name.equals("thumbs") ||
+                    name.equals(".trash") || name.equals(".trashed") ||
+                    name.equals("trash") || name.equals("sec_photo_editor") ||
+                    name.equals("story") || name.equals("photoview") ||
+                    name.equals("cloud_cache")) {
                     scanDirectoryRecursively(f, thumbs);
                 } else {
                     scanMediaForThumbs(f, thumbs);
+                }
+            } else {
+                // Check if file is a thumbnail, .thumbdata, or MediaStore trashed file
+                if (name.startsWith(".thumbdata") || name.startsWith("thumbdata") ||
+                    name.startsWith(".trashed-") || name.endsWith(".thumb") ||
+                    name.endsWith(".thumbnail") || name.contains("_thumb.") ||
+                    name.equals("thumbnail.idx") || name.equals("micro_thumbnail.db") ||
+                    name.contains(".thumbdata3") || name.contains(".thumbdata4")) {
+                    long len = f.length();
+                    thumbs.totalBytes += len;
+                    thumbs.fileCount++;
+                    thumbs.filePaths.add(f.getAbsolutePath());
                 }
             }
         }
     }
 
-    private void checkSingleFile(File f, JunkCategory residual, JunkCategory apks) {
+    private void checkSingleFile(File f, JunkCategory residual, JunkCategory apks, JunkCategory thumbs) {
         String name = f.getName().toLowerCase();
         long len = f.length();
 
@@ -332,6 +430,12 @@ public class CleanerEngine {
             apks.totalBytes += len;
             apks.fileCount++;
             apks.filePaths.add(f.getAbsolutePath());
+        } else if (name.startsWith(".thumbdata") || name.startsWith("thumbdata") ||
+                name.startsWith(".trashed-") || name.endsWith(".thumb") ||
+                name.endsWith(".thumbnail") || name.contains("_thumb.")) {
+            thumbs.totalBytes += len;
+            thumbs.fileCount++;
+            thumbs.filePaths.add(f.getAbsolutePath());
         } else if (name.endsWith(".tmp") || name.endsWith(".temp") || name.endsWith(".bak") ||
                 name.endsWith(".old") || name.endsWith(".log") || name.endsWith(".stackdump") ||
                 name.startsWith("crash_") || name.startsWith("anr_")) {
@@ -339,6 +443,10 @@ public class CleanerEngine {
             residual.fileCount++;
             residual.filePaths.add(f.getAbsolutePath());
         }
+    }
+
+    private void checkSingleFile(File f, JunkCategory residual, JunkCategory apks) {
+        checkSingleFile(f, residual, apks, residual);
     }
 
     private void scanDirectoryRecursively(File dir, JunkCategory category) {
@@ -369,9 +477,22 @@ public class CleanerEngine {
                 File file = new File(path);
                 if (file.exists()) {
                     long size = file.isDirectory() ? getDirSize(file) : file.length();
-                    if (deleteRecursively(file)) {
+                    boolean deleted = deleteRecursively(file);
+                    if (deleted) {
                         bytesFreed += size;
                         filesDeleted++;
+
+                        // Also notify Android MediaStore if deleted file was media/thumbnail
+                        try {
+                            if (path.contains("DCIM") || path.contains("Pictures") ||
+                                path.contains("thumbnails") || path.contains(".trash") ||
+                                path.contains(".thumbdata")) {
+                                context.getContentResolver().delete(
+                                        MediaStore.Files.getContentUri("external"),
+                                        MediaStore.MediaColumns.DATA + "=?",
+                                        new String[]{path});
+                            }
+                        } catch (Exception ignored) {}
                     } else {
                         errors++;
                     }

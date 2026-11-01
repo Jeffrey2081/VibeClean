@@ -3,54 +3,59 @@
 [![100% Vibe Coded](https://img.shields.io/badge/Vibe%20Coded-100%25-ff69b4.svg?style=for-the-badge&logo=sparkles&logoColor=white)](https://github.com/Jeffrey2081/VibeClean)
 [![Android](https://img.shields.io/badge/Android-7.0%2B%20(API%2024--36)-3DDC84.svg?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![APK Size](https://img.shields.io/badge/APK%20Size-~100%20KB-orange.svg?style=for-the-badge)]()
+[![APK Size](https://img.shields.io/badge/APK%20Size-~120%20KB-orange.svg?style=for-the-badge)]()
 
-> **100% Vibe Coded.** Engineered end-to-end with pure AI agentic pair-programming, hyper-optimized low-level Android system APIs, and zero bloatware.
+> **100% Vibe Coded.** Engineered end-to-end with pure AI agentic pair-programming, liquid glass aesthetics, low-level Android kernel/sysfs APIs, and zero bloatware.
 
-**VibeClean PRO** is a modern, lightweight, glassmorphic Android utility inspired by 1Tap Cleaner. It combines zero-friction UI automation, deep system cache clearing, hardware-level flash TRIM, and Ahead-of-Time (AOT) ART Dexopt compilation to deliver maximum speed, extended battery life, and reclaimed storage.
+**VibeClean PRO** is a modern, ultra-lightweight Android utility inspired by 1Tap Cleaner. It combines liquid glassmorphism, zero-friction UI automation, deep system cache clearing, hardware-level flash TRIM, Ahead-of-Time (AOT) ART Dexopt compilation, and specialized Samsung One UI thumbnail purging.
 
 ---
 
 ## 📸 Screenshots
 
-| Dashboard & Health | Turbo Shell & Cleaner | App Storage Manager | Defaults & System |
-|:------------------:|:---------------------:|:-------------------:|:-----------------:|
-| ![Dashboard](screenshots/vibeclean_pro_live.png) | ![Cleaner](screenshots/screen_tab2_cleaner.png) | ![Apps](screenshots/screen_tab3_apps.png) | ![Defaults](screenshots/screen_tab4_defaults.png) |
+| Liquid Glass Dashboard | Turbo Shell & Auto-Opt | S26 Gallery Deep Purge | Widgets Suite (3 Widgets) |
+|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
+| ![Dashboard](screenshots/screen_liquid_glass_dashboard.png) | ![Turbo](screenshots/screen_turbo_card_scrolled.png) | ![Gallery](screenshots/screen_tab_cleaner_gallery.png) | ![Widgets](screenshots/screen_tab_widgets.png) |
 
 ---
 
 ## ⚡ Key Features
 
-### 1. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
+### 1. 💎 Liquid Glass Design & Fluid Aesthetics
+- **Frosted Liquid Glass**: 28px backdrop-filter blur with 200% saturation for deep cosmic reflections.
+- **Specular Highlights**: Multi-layer specular glare along card edges with animated liquid sheen wave transitions.
+- **Fluid Haptics**: Native vibration feedback paired with crisp, interactive micro-animations.
+
+### 2. ⚡ 1-Tap Auto Optimize (Single-Button Pipeline)
+A single prominent hero button that sequentially triggers all high-performance optimizations in one click:
+1. **System Cache Trim**: `pm trim-caches 999G` across all packages without touching user logins.
+2. **Flash Storage Hardware TRIM**: `sm fstrim` across UFS NAND flash partitions.
+3. **Samsung Gallery & Thumbnails Deep Purge**: Completely purges `.thumbnails`, `.thumbdata*`, and MediaStore `.trashed-*` files.
+4. **Storage & XML Sweeper**: Removes orphaned GCam XML configs and root crash dump files.
+5. **AOT Speed-Profile Compilation**: Compiles user apps ahead-of-time with `speed-profile`.
+6. **AOT Native Machine Code Compilation**: Compiles core UI components (One UI Home, System UI, Keyboard, Camera, Gallery, Google Play Services) into machine code (`speed`).
+7. **RAM & Process Boost**: Flushes background cache and triggers system garbage collection.
+
+### 3. 🖼️ Samsung Galaxy (S20-S26) & Android Gallery Thumbnail Purge
+Fixes the notorious Android 11-16 scoped storage issue where thumbnail caches don't get cleared:
+- Recursively scans and purges `/sdcard/DCIM/.thumbnails`, `/sdcard/Pictures/.thumbnails`, `/sdcard/Movies/.thumbnails`, and `/sdcard/Download/.thumbnails`.
+- Deep-cleans massive hidden `.thumbdata3--*` and `.thumbdata4--*` index files.
+- Clears Android MediaStore `.trashed-*` files (photos and videos kept in limbo consuming gigabytes).
+- Automatically invokes Android `ContentResolver` to update MediaStore indexes immediately after deletion.
+
+### 4. 🔋 True Battery Health State (Not Just Percent)
+- Queries Android `BatteryManager.EXTRA_HEALTH` and Linux/Samsung sysfs nodes (`/sys/class/power_supply/battery/health`, `fg_asoc`, `battery_cycle`).
+- Accurately displays the true **Battery Health condition**: **Good (Optimal)**, **Normal**, or **Overheated**, rather than confusing it with current battery charge percentage.
+
+### 5. 📱 Multi-Widget Suite (3 Useful Home Screen Widgets)
+Includes 3 distinct native Android widgets:
+1. **System Stats Monitor (`4 × 2`)**: Real-time Free Storage, RAM Usage %, Battery Health (Good/Optimal), and ZRAM/Swap status with an instant `⚡ BOOST` button.
+2. **1-Tap Classic Cleaner (`3 × 2`)**: Visual Storage and RAM meters with instant 1-tap background cache cleaning and haptic feedback.
+3. **Quick Clean Pill (`2 × 1`)**: Minimalist liquid glass pill displaying free storage with a quick-tap BOOST action designed for clean dock setups.
+
+### 6. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
 - Built-in `AutoCacheCleanerService` automatically navigates through all installed apps.
 - Opens system App Info → Storage → dynamically detects and taps **"Clear cache"** → returns back to queue the next app.
-- Zero manual clicking required across dozens of apps.
-
-### 2. 🚀 Turbo Shell & Ahead-of-Time ART Compilation
-- **Dexopt Optimization**: Compiles bytecode ahead of time to eliminate JIT stutter and slow app startups after OS updates.
-  - Third-party apps (WhatsApp, Instagram, Snapchat, Browsers, etc.) compiled with `speed-profile`.
-  - Core System & UI components (One UI Home, SystemUI, Keyboard, Camera, Gallery, Google Play Services, Settings) compiled into machine code (`speed`).
-- **System-Wide Cache Trimming**: Executes `pm trim-caches 999G` across all packages, reclaiming orphaned post-upgrade cache artifacts without touching logins or app data.
-- **UFS Flash TRIM (`fstrim`)**: Issues hardware TRIM (`sm fstrim`) across NAND flash partitions to clean unmapped flash blocks and restore read/write speeds.
-
-### 3. 🔍 Hardware & Health Verification
-- **Battery Health**: Reads live hardware health percentage, cycle charge estimates, and real-time battery temperatures.
-- **RAM Plus & Swap Monitor**: Analyzes `/proc/swaps` and ZRAM allocation to ensure optimal physical RAM utilization without flash wear.
-- **UFS Storage Analytics**: Accurate partition-level breakdown of total, used, and free flash storage.
-
-### 4. 🧹 Storage Junk & Root XML Sweeper
-- **Root XML Sweeper**: Purges orphaned camera XML configs (`cam_settings.xml`, `hdr_menu.xml`) and stray files left behind in `/sdcard/`.
-- **SD & Storage Cleaner**: Scans for `.tmp`, `.log`, obsolete APK installers, and empty directories.
-- **History & Log Cleaner**: Cleans clipboard, browser traces, and crash dumps.
-
-### 5. ⚙️ App Monitoring & Defaults Manager
-- **App Storage Inspector**: Sorts apps by total size, cache size, or data usage.
-- **Cache Limit Alerts**: Configurable cache size thresholds (100MB, 250MB, 500MB, 1GB) with automated cleanup notifications.
-- **Defaults Cleaner**: View and reset default intent handlers (browsers, media players, dialers) with one tap.
-
-### 6. 📱 Modern Glassmorphic Widget & Background Automation
-- **Home Screen Widget**: 1-Tap quick cleaning widget showing available storage and quick-clean action.
-- **Automated Cleaning**: Low-storage triggers via Android `JobScheduler` and `BroadcastReceiver`.
 
 ---
 
@@ -58,66 +63,60 @@
 
 ```mermaid
 flowchart TD
-    UI["Glassmorphic Modern UI (WebView / SPA)"]
+    UI["Liquid Glass UI (SPA / WebView)"]
     Bridge["CleanerBridge (JavaScriptInterface)"]
-    Engine["CleanerEngine (Android StorageStatsManager)"]
+    Engine["CleanerEngine (StorageStatsManager & MediaStore)"]
+    Turbo["TurboShellEngine (AOT Pipeline, TRIM & Sysfs)"]
     AutoService["AutoCacheCleanerService (AccessibilityService)"]
-    ShellEngine["TurboShellEngine (Root / Shizuku / ADB Shell)"]
-    Hardware["Hardware Health (/proc/swaps, BatteryManager, StatFs)"]
-
-    UI <-->|JSON Events & Progress| Bridge
-    Bridge --> Engine
-    Bridge --> AutoService
-    Bridge --> ShellEngine
-    Bridge --> Hardware
     
-    AutoService -->|Taps 'Clear Cache'| SettingsApp["Android Settings (com.android.settings)"]
-    ShellEngine -->|pm trim-caches| AndroidPM["PackageManager Service"]
-    ShellEngine -->|cmd package compile| ARTCompiler["Android Runtime (ART dex2oat)"]
-    ShellEngine -->|sm fstrim| StorageDaemon["vold / StorageManager"]
-```
+    W1["System Stats Widget (4x2)"]
+    W2["1-Tap Classic Widget (3x2)"]
+    W3["Quick Clean Pill Widget (2x1)"]
 
-- **Zero Heavy Frameworks**: Ultra-compact binary (**~102 KB APK**).
-- **Security-First**: Uses official public Android APIs wherever possible (`StorageStatsManager`, `AccessibilityService`, `JobScheduler`). High-performance shell operations gracefully fall back to ADB/Shizuku execution.
+    UI <-->|Progress & Events| Bridge
+    Bridge --> Engine
+    Bridge --> Turbo
+    Bridge --> AutoService
+    
+    W1 --> Engine
+    W1 --> Turbo
+    W2 --> Engine
+    W3 --> Engine
+
+    Turbo -->|pm trim-caches| PM["PackageManager"]
+    Turbo -->|cmd package compile| ART["Android Runtime (dex2oat)"]
+    Turbo -->|sm fstrim| Vold["vold / Storage Daemon"]
+    Turbo -->|rm -rf .thumbdata*| Gallery["Samsung Gallery / MediaStore"]
+```
 
 ---
 
 ## 📥 Installation
 
-The final signed APK is available in the repository releases and in your `Downloads` directory:
+Download the latest signed APK from GitHub Releases or directly from your `Downloads` directory:
 
 ```bash
 # Install via ADB:
 adb install -r ~/Downloads/VibeClean_v1.0.apk
-
-# Or download VibeClean_v1.0.apk directly on your Android device and tap to install!
 ```
 
-### Granting Permissions
-
-1. **Storage Access**: Grant All Files Access when prompted (or in Settings → Special App Access → All Files Access).
-2. **Accessibility Service**: In Settings → Accessibility → Installed Apps → Turn on **VibeClean PRO - Auto Cache Cleaner**.
-3. **Usage Stats**: Enable "Usage Access" so VibeClean can inspect app cache sizes without root.
-4. **Shell / Shizuku (Optional for Turbo AOT)**: Run with ADB or Shizuku to unlock full `dexopt` compilation and `fstrim`.
+*(Or transfer [`VibeClean_v1.0.apk`](file:///home/jeff/Downloads/VibeClean_v1.0.apk) directly to your Android device and tap to install).*
 
 ---
 
 ## 🔨 Building from Source
 
-No complex Android Studio installation needed. You can build the signed APK in under 5 seconds with standard command-line tools:
+Build the signed APK in under 3 seconds using standard command-line tools:
 
 ```bash
-# Dependencies: aapt2, d8, apksigner, openjdk-21
 git clone https://github.com/Jeffrey2081/VibeClean.git
 cd VibeClean
 chmod +x build.sh
 ./build.sh
 ```
 
-The output APK will be generated at `dist/VibeClean_v1.0.apk`.
-
 ---
 
 ## 📜 License
 
-MIT License © 2026 [Jeffrey2081](https://github.com/Jeffrey2081). Vibe coded with ❤️.
+MIT License © 2026 [Jeffrey2081](https://github.com/Jeffrey2081). 100% Vibe Coded with ❤️.

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_pill_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_pill_bg"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_pill_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1-TAP BOOST"
+            android:textColor="#00F0FF"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/widget_pill_storage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-- GB Free"
+            android:textColor="#E2E8F0"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_widget_pill_clean"
+        android:layout_width="68dp"
+        android:layout_height="32dp"
+        android:background="@drawable/widget_btn_bg"
+        android:text="CLEAN"
+        android:textColor="#0A0F1D"
+        android:textStyle="bold"
+        android:textSize="11sp" />
+
+</LinearLayout>

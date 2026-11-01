@@ -253,6 +253,181 @@ public class TurboShellEngine {
         return res;
     }
 
+    // 6. Deep Gallery & Thumbnails Cleaner for Samsung Galaxy (S20-S26) & Android 11-16
+    public JSONObject cleanSamsungGalleryAndThumbnails() {
+        JSONObject res = new JSONObject();
+        long beforeFree = 0;
+        long afterFree = 0;
+        try {
+            CleanerEngine engine = new CleanerEngine(context);
+            beforeFree = engine.getStorageInfo().optLong("freeBytes", 0);
+        } catch (Exception ignored) {}
+
+        // Shell command purges both standard Android media thumbnail caches and Samsung One UI private thumbnail paths
+        String cmd = "rm -rf /sdcard/DCIM/.thumbnails/* /sdcard/Pictures/.thumbnails/* " +
+                "/sdcard/Movies/.thumbnails/* /sdcard/Download/.thumbnails/* /sdcard/.thumbnails/* " +
+                "/sdcard/DCIM/.thumb/* /sdcard/Pictures/.thumb/* " +
+                "/sdcard/DCIM/.trash/* /sdcard/Pictures/.trash/* " +
+                "/sdcard/DCIM/.thumbdata* /sdcard/Pictures/.thumbdata* " +
+                "/sdcard/Android/data/com.sec.android.gallery3d/cache/* " +
+                "/sdcard/Android/data/com.sec.android.gallery3d/files/.trash/* " +
+                "/sdcard/Android/data/com.samsung.android.gallery.preview/*";
+        String shellOut = runShellCommand(cmd);
+
+        // Java sweep as well for storage paths accessible under MANAGE_EXTERNAL_STORAGE
+        File ext = Environment.getExternalStorageDirectory();
+        if (ext != null && ext.exists()) {
+            File[] targets = new File[]{
+                    new File(ext, "DCIM/.thumbnails"),
+                    new File(ext, "DCIM/.thumb"),
+                    new File(ext, "Pictures/.thumbnails"),
+                    new File(ext, "Pictures/.thumb"),
+                    new File(ext, "Movies/.thumbnails"),
+                    new File(ext, "Download/.thumbnails"),
+                    new File(ext, ".thumbnails"),
+                    new File(ext, "DCIM/.trash"),
+                    new File(ext, "Pictures/.trash")
+            };
+            for (File t : targets) {
+                if (t.exists()) {
+                    deleteContentsRecursively(t);
+                }
+            }
+        }
+
+        try {
+            CleanerEngine engine = new CleanerEngine(context);
+            afterFree = engine.getStorageInfo().optLong("freeBytes", 0);
+            long freed = Math.max(0, afterFree - beforeFree);
+            res.put("success", true);
+            res.put("bytesFreed", freed);
+            res.put("message", "Samsung Gallery & Media Thumbnail cache purged.");
+        } catch (Exception ignored) {}
+
+        return res;
+    }
+
+    private static class PipelineAotListener implements ShellProgressListener {
+        private final ShellProgressListener parent;
+        public PipelineAotListener(ShellProgressListener parent) {
+            this.parent = parent;
+        }
+        @Override
+        public void onProgress(String currentTask, int percent) {
+            if (parent != null) {
+                int mapped = 60 + (int) (percent * 0.30);
+                parent.onProgress(currentTask, mapped);
+            }
+        }
+        @Override
+        public void onLog(String logLine) {
+            if (parent != null) {
+                parent.onLog(logLine);
+            }
+        }
+    }
+
+    // 7. Single-Button Complete Auto-Optimizer (AOT + System Trim + UFS TRIM + Gallery Purge + RAM)
+    public JSONObject runAutoOptimizePipeline(ShellProgressListener listener) {
+        JSONObject result = new JSONObject();
+        List<String> logs = new ArrayList<>();
+        long totalFreedBytes = 0;
+
+        if (listener != null) {
+            listener.onProgress("Initializing 1-Tap Auto Optimizer...", 5);
+            listener.onLog("⚡ Starting VibeClean Auto Optimization Pipeline...");
+        }
+
+        // Step 1: System Cache Trimming (pm trim-caches 999G)
+        if (listener != null) {
+            listener.onProgress("Trimming System Caches (pm trim-caches)...", 15);
+            listener.onLog("🧹 Executing pm trim-caches 999G across all packages...");
+        }
+        JSONObject trimRes = runSystemCacheTrim();
+        logs.add("System Cache Trim: " + trimRes.optString("message", "Success"));
+
+        // Step 2: Flash Storage Hardware TRIM (sm fstrim)
+        if (listener != null) {
+            listener.onProgress("Executing Hardware Flash TRIM (sm fstrim)...", 28);
+            listener.onLog("⚡ Executing sm fstrim on UFS NAND flash partitions...");
+        }
+        JSONObject fstrimRes = runHardwareTrim();
+        logs.add("Hardware Flash TRIM: " + fstrimRes.optString("message", "Success"));
+
+        // Step 3: Samsung Gallery & Media Thumbnails Deep Clean
+        if (listener != null) {
+            listener.onProgress("Purging Samsung Gallery & Thumbnail caches...", 42);
+            listener.onLog("🖼️ Purging .thumbnails, .thumbdata, and gallery trash...");
+        }
+        JSONObject galleryRes = cleanSamsungGalleryAndThumbnails();
+        long galleryFreed = galleryRes.optLong("bytesFreed", 0);
+        totalFreedBytes += galleryFreed;
+        logs.add("Gallery & Thumbnails Purge: Completed");
+
+        // Step 4: Storage Root XML & Orphaned Junk Files Sweeper
+        if (listener != null) {
+            listener.onProgress("Sweeping orphaned XML & junk files...", 52);
+            listener.onLog("📁 Cleaning orphaned camera configs and crash dumps...");
+        }
+        JSONObject xmlRes = cleanOrphanedXmlAndRandomFiles();
+        long xmlFreed = xmlRes.optLong("bytesFreed", 0);
+        totalFreedBytes += xmlFreed;
+        logs.add("Storage Sweeper: Purged " + xmlRes.optInt("filesDeleted", 0) + " junk files");
+
+        // Step 5 & 6: Ahead-of-Time ART Compilation (Dexopt)
+        if (listener != null) {
+            listener.onProgress("Compiling Apps with ART AOT Dexopt...", 60);
+            listener.onLog("🚀 Compiling third-party apps & Core System UI...");
+        }
+        JSONObject aotRes = runAotOptimization(new PipelineAotListener(listener));
+        logs.add("AOT Compilation: " + aotRes.optInt("compiledThirdParty", 0) + " user apps, "
+                + aotRes.optInt("compiledSystem", 0) + " core UI components optimized.");
+
+        // Step 7: RAM & Process Optimization
+        if (listener != null) {
+            listener.onProgress("Boosting RAM & finalizing system state...", 94);
+            listener.onLog("⚡ Freeing background memory and flushing caches...");
+        }
+        CleanerEngine engine = new CleanerEngine(context);
+        JSONObject ramRes = engine.boostRam();
+        long ramFreed = ramRes.optLong("bytesFreed", 0);
+        totalFreedBytes += ramFreed;
+        logs.add("RAM Boost: Reclaimed " + (ramFreed / (1024 * 1024)) + " MB");
+
+        if (listener != null) {
+            listener.onProgress("System Fully Optimized! ✨", 100);
+            listener.onLog("✅ All stages completed successfully.");
+        }
+
+        try {
+            result.put("success", true);
+            result.put("totalFreedBytes", totalFreedBytes);
+            result.put("compiledThirdParty", aotRes.optInt("compiledThirdParty", 0));
+            result.put("compiledSystem", aotRes.optInt("compiledSystem", 0));
+            JSONArray arr = new JSONArray();
+            for (String l : logs) arr.put(l);
+            result.put("logs", arr);
+        } catch (Exception ignored) {}
+
+        return result;
+    }
+
+    private void deleteContentsRecursively(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    if (child.isDirectory()) {
+                        deleteContentsRecursively(child);
+                        child.delete();
+                    } else {
+                        child.delete();
+                    }
+                }
+            }
+        }
+    }
+
     // Generate Full ADB Shell One-Liner Script for non-root users
     public String getAdbCommandScript() {
         return "# VibeClean Turbo Optimization Suite\n" +

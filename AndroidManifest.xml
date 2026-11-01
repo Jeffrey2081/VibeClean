@@ -57,6 +57,34 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
+        <!-- System Stats Monitor Widget -->
+        <receiver
+            android:name=".SystemStatsWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_system_stats_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.onetap.cleaner.ACTION_STATS_BOOST" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_system_stats_info" />
+        </receiver>
+
+        <!-- Quick Clean Compact Pill Widget -->
+        <receiver
+            android:name=".QuickCleanWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_quick_pill_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.onetap.cleaner.ACTION_PILL_CLEAN" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quick_pill_info" />
+        </receiver>
+
         <!-- Background Automation & Low Storage Receiver -->
         <receiver
             android:name=".CleanerAutomationReceiver"
