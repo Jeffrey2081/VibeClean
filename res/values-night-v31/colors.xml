@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Expressive Dynamic Colors (Dark Theme / Wallpaper Monet) -->
+    <color name="m3_widget_bg">@android:color/system_neutral1_900</color>
+    <color name="m3_widget_surface">@android:color/system_neutral1_800</color>
+    <color name="m3_widget_surface_container">@android:color/system_neutral1_700</color>
+    <color name="m3_widget_surface_variant">@android:color/system_neutral2_800</color>
+    
+    <color name="m3_widget_primary">@android:color/system_accent1_300</color>
+    <color name="m3_widget_primary_container">@android:color/system_accent1_700</color>
+    <color name="m3_widget_on_primary">@android:color/system_accent1_900</color>
+    <color name="m3_widget_on_primary_container">@android:color/system_accent1_100</color>
+
+    <color name="m3_widget_secondary_container">@android:color/system_accent2_800</color>
+    <color name="m3_widget_on_secondary_container">@android:color/system_accent2_100</color>
+
+    <color name="m3_widget_tertiary_container">@android:color/system_accent3_800</color>
+    <color name="m3_widget_on_tertiary_container">@android:color/system_accent3_100</color>
+
+    <color name="m3_widget_outline">@android:color/system_neutral2_700</color>
+    <color name="m3_widget_text_primary">@android:color/system_neutral1_50</color>
+    <color name="m3_widget_text_secondary">@android:color/system_neutral2_200</color>
+    <color name="m3_widget_text_muted">@android:color/system_neutral2_400</color>
+
+    <color name="m3_widget_progress_track">@android:color/system_neutral2_800</color>
+    <color name="m3_widget_accent_green">@android:color/system_accent3_300</color>
+    <color name="m3_widget_accent_cyan">@android:color/system_accent1_300</color>
+</resources>

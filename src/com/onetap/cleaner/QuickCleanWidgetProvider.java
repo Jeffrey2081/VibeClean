@@ -84,7 +84,7 @@ public class QuickCleanWidgetProvider extends AppWidgetProvider {
                     ComponentName thisWidget = new ComponentName(context, QuickCleanWidgetProvider.class);
                     int[] allIds = mgr.getAppWidgetIds(thisWidget);
                     for (int id : allIds) {
-                        updateWidget(context, mgr, id, "CLEANED ✨");
+                        updateWidget(context, mgr, id, "BOOSTED ✨");
                     }
                 });
             }).start();

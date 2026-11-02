@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_battery_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/m3_widget_card_bg"
+    android:orientation="vertical">
+
+    <!-- Header Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="BATTERY SHIELD"
+            android:textColor="@color/m3_widget_primary"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/widget_bat_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/m3_status_pill"
+            android:text="Active 🟢"
+            android:textColor="@color/m3_widget_on_tertiary_container"
+            android:textStyle="bold"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- Metrics Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <!-- Health Condition Tile -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/m3_widget_tile_bg"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONDITION"
+                android:textColor="@color/m3_widget_text_muted"
+                android:textStyle="bold"
+                android:textSize="9sp" />
+
+            <TextView
+                android:id="@+id/widget_bat_health"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Good (Optimal)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/widget_bat_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="31°C · Cool"
+                android:textColor="@color/m3_widget_text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Battery Level & Doze Tile -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/m3_widget_tile_bg"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CHARGE LEVEL"
+                android:textColor="@color/m3_widget_text_muted"
+                android:textStyle="bold"
+                android:textSize="9sp" />
+
+            <TextView
+                android:id="@+id/widget_bat_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="84%"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <ProgressBar
+                android:id="@+id/widget_bat_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="3dp"
+                android:max="100"
+                android:progress="84"
+                android:progressDrawable="@drawable/m3_progress_bar_horizontal" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Quick Doze Action Button -->
+    <Button
+        android:id="@+id/btn_widget_bat_doze"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/m3_btn_tonal"
+        android:text="🌙 ACTIVATE QUICK DOZE"
+        android:textColor="@color/m3_widget_on_primary_container"
+        android:textStyle="bold"
+        android:textSize="11sp" />
+
+</LinearLayout>

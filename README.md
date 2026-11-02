@@ -68,11 +68,26 @@ A customizable battery suite allowing users to selectively choose which optimiza
 - Queries Android `BatteryManager.EXTRA_HEALTH` and Linux/Samsung sysfs nodes (`/sys/class/power_supply/battery/health`, `fg_asoc`, `battery_cycle`).
 - Accurately displays the true **Battery Health condition**: **Good (Optimal)**, **Normal**, or **Overheated**, rather than confusing it with current battery charge percentage.
 
-### 6. 📱 Multi-Widget Suite (3 Useful Home Screen Widgets)
-Includes 3 distinct native Android widgets:
-1. **System Stats Monitor (`4 × 2`)**: Real-time Free Storage, RAM Usage %, Battery Health (Good/Optimal), and ZRAM/Swap status with an instant `⚡ BOOST` button.
-2. **1-Tap Classic Cleaner (`3 × 2`)**: Visual Storage and RAM meters with instant 1-tap background cache cleaning and haptic feedback.
-3. **Quick Clean Pill (`2 × 1`)**: Minimalist liquid glass pill displaying free storage with a quick-tap BOOST action designed for clean dock setups.
+### 6. 📱 Material 3 Expressive Multi-Widget Suite (5 Adaptive Widgets)
+Engineered with **Material 3 Expressive** geometry and **System Dynamic Color (Monet)** support, automatically adapting to your wallpaper and Android theme across light and dark modes:
+
+1. **System Stats Dashboard (`4 × 2`)**:
+   - Comprehensive multi-tile hardware monitor.
+   - Shows Free Storage with visual progress bar, RAM Usage %, Battery Health condition with temperature, and Flash TRIM status.
+   - Full-width M3 Expressive pill button: `⚡ 1-TAP OPTIMIZE`.
+2. **1-Tap Clean & Boost (`2 × 2` / `3 × 2`)**:
+   - Squircle M3 Expressive card with Storage and RAM progress tracks.
+   - Prominent M3 pill button: `⚡ BOOST NOW` for instant cache flush and memory boost.
+3. **Battery & Thermal Health (`2 × 2`)**:
+   - Monitors true battery health condition (Good/Optimal), live temperature in °C, and charge level.
+   - M3 Tonal action button: `🌙 ACTIVATE QUICK DOZE` to immediately plunge the device into zero-delay deep sleep.
+4. **Storage & Cache Gauge (`3 × 2`)**:
+   - Dedicated storage gauge displaying available space vs cached junk with visual progress bar.
+   - M3 Primary action button: `🧹 CLEAN JUNK CACHE`.
+5. **Quick Clean Pill (`2 × 1`)**:
+   - Ultra-minimalist Material 3 Expressive pill displaying available storage with a quick-tap BOOST action designed for clean dock setups.
+
+> **💡 Android 12–16 Widget Picker Fix**: All 5 widgets include native `android:previewLayout` and standardized cell bounds (`targetCellWidth`, `targetCellHeight`, `minResizeWidth`, `minResizeHeight`), ensuring Samsung One UI Home, Pixel Launcher, and third-party launchers reliably render the full collection in the widget drawer without dropping or hiding widgets.
 
 ### 7. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
 - Built-in `AutoCacheCleanerService` automatically navigates through all installed apps.

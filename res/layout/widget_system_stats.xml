@@ -3,10 +3,10 @@
     android:id="@+id/widget_stats_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_glass_bg"
+    android:background="@drawable/m3_widget_card_bg"
     android:orientation="vertical">
 
-    <!-- Header -->
+    <!-- Header Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,8 +15,8 @@
         android:layout_marginBottom="8dp">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/ic_launcher"
             android:contentDescription="@string/app_name" />
 
@@ -25,29 +25,30 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="VIBECLEAN STATS"
-            android:textColor="#00F0FF"
+            android:text="SYSTEM DASHBOARD"
+            android:textColor="@color/m3_widget_primary"
             android:textStyle="bold"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/widget_stats_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Healthy"
-            android:textColor="#10B981"
+            android:background="@drawable/m3_status_pill"
+            android:text="Healthy 🟢"
+            android:textColor="@color/m3_widget_on_tertiary_container"
             android:textStyle="bold"
-            android:textSize="11sp" />
+            android:textSize="10sp" />
     </LinearLayout>
 
-    <!-- 2x2 Grid of System Metrics -->
+    <!-- 2x2 Grid of Material 3 Expressive Metric Tiles -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Row 1: Storage & RAM -->
+        <!-- Row 1: Storage & RAM Tiles -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -55,52 +56,82 @@
             android:orientation="horizontal"
             android:layout_marginBottom="6dp">
 
+            <!-- Storage Tile -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/m3_widget_tile_bg"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="FREE STORAGE"
-                    android:textColor="#64748B"
+                    android:textColor="@color/m3_widget_text_muted"
                     android:textStyle="bold"
                     android:textSize="9sp" />
+
                 <TextView
                     android:id="@+id/widget_stat_storage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-- GB"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/m3_widget_text_primary"
                     android:textStyle="bold"
-                    android:textSize="13sp" />
+                    android:textSize="15sp" />
+
+                <ProgressBar
+                    android:id="@+id/widget_progress_storage"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:max="100"
+                    android:progress="35"
+                    android:progressDrawable="@drawable/m3_progress_bar_horizontal" />
             </LinearLayout>
 
+            <!-- RAM Tile -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/m3_widget_tile_bg"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="RAM USAGE"
-                    android:textColor="#64748B"
+                    android:textColor="@color/m3_widget_text_muted"
                     android:textStyle="bold"
                     android:textSize="9sp" />
+
                 <TextView
                     android:id="@+id/widget_stat_ram"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="--%"
-                    android:textColor="#A855F7"
+                    android:textColor="@color/m3_widget_text_primary"
                     android:textStyle="bold"
-                    android:textSize="13sp" />
+                    android:textSize="15sp" />
+
+                <ProgressBar
+                    android:id="@+id/widget_progress_ram"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:max="100"
+                    android:progress="60"
+                    android:progressDrawable="@drawable/m3_progress_bar_horizontal" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Row 2: Battery Health & RAM Plus / Swap -->
+        <!-- Row 2: Battery Health & UFS Flash TRIM Tiles -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -108,60 +139,86 @@
             android:orientation="horizontal"
             android:layout_marginBottom="8dp">
 
+            <!-- Battery Tile -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/m3_widget_tile_bg"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="BATTERY HEALTH"
-                    android:textColor="#64748B"
+                    android:textColor="@color/m3_widget_text_muted"
                     android:textStyle="bold"
                     android:textSize="9sp" />
+
                 <TextView
                     android:id="@+id/widget_stat_battery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Good (Optimal)"
-                    android:textColor="#34D399"
+                    android:textColor="@color/m3_widget_text_primary"
                     android:textStyle="bold"
                     android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/widget_stat_battery_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="31°C · 84%"
+                    android:textColor="@color/m3_widget_text_secondary"
+                    android:textSize="10sp" />
             </LinearLayout>
 
+            <!-- TRIM / Storage Tile -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/m3_widget_tile_bg"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SWAP / ZRAM"
-                    android:textColor="#64748B"
+                    android:text="UFS FLASH TRIM"
+                    android:textColor="@color/m3_widget_text_muted"
                     android:textStyle="bold"
                     android:textSize="9sp" />
+
                 <TextView
                     android:id="@+id/widget_stat_swap"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Low Wear"
-                    android:textColor="#38BDF8"
+                    android:text="Optimized"
+                    android:textColor="@color/m3_widget_text_primary"
                     android:textStyle="bold"
                     android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/widget_stat_swap_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ZRAM: Low Wear"
+                    android:textColor="@color/m3_widget_text_secondary"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Action Button -->
+    <!-- Material 3 Expressive Action Button -->
     <Button
         android:id="@+id/btn_widget_stats_boost"
         android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:background="@drawable/widget_btn_bg"
-        android:text="⚡ OPTIMIZE NOW"
-        android:textColor="#0A0F1D"
+        android:layout_height="36dp"
+        android:background="@drawable/m3_btn_primary"
+        android:text="⚡ 1-TAP OPTIMIZE"
+        android:textColor="@color/m3_widget_on_primary"
         android:textStyle="bold"
         android:textSize="12sp" />
 

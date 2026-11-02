@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Home Screen 1-Tap Widget -->
+        <!-- Widget 1: 1-Tap Clean & Boost (2x2 / 3x2) -->
         <receiver
             android:name=".OneTapWidgetProvider"
             android:exported="true"
@@ -61,7 +61,7 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <!-- System Stats Monitor Widget -->
+        <!-- Widget 2: System Stats Dashboard (4x2) -->
         <receiver
             android:name=".SystemStatsWidgetProvider"
             android:exported="true"
@@ -75,7 +75,35 @@
                 android:resource="@xml/widget_system_stats_info" />
         </receiver>
 
-        <!-- Quick Clean Compact Pill Widget -->
+        <!-- Widget 3: Battery & Thermal Health (2x2 / 3x2) -->
+        <receiver
+            android:name=".BatteryMonitorWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_battery_monitor_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.onetap.cleaner.ACTION_BATTERY_DOZE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_monitor_info" />
+        </receiver>
+
+        <!-- Widget 4: Storage & Cache Gauge (3x2) -->
+        <receiver
+            android:name=".StorageCleanerWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_storage_cleaner_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.onetap.cleaner.ACTION_STORAGE_CLEAN" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_storage_cleaner_info" />
+        </receiver>
+
+        <!-- Widget 5: Quick Clean Compact Pill (2x1) -->
         <receiver
             android:name=".QuickCleanWidgetProvider"
             android:exported="true"

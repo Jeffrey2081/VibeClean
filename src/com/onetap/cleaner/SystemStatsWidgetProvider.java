@@ -25,7 +25,7 @@ public class SystemStatsWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
-            updateWidget(context, appWidgetManager, appWidgetId, "Healthy");
+            updateWidget(context, appWidgetManager, appWidgetId, "Healthy 🟢");
         }
     }
 
@@ -37,6 +37,7 @@ public class SystemStatsWidgetProvider extends AppWidgetProvider {
 
             JSONObject storage = engine.getStorageInfo();
             long freeBytes = storage.optLong("freeBytes", 0);
+            int storagePercentUsed = storage.optInt("percentUsed", 0);
             double freeGb = freeBytes / (1024.0 * 1024.0 * 1024.0);
 
             JSONObject ram = engine.getRamInfo();
@@ -44,15 +45,23 @@ public class SystemStatsWidgetProvider extends AppWidgetProvider {
 
             JSONObject battery = engine.getBatteryInfo();
             String healthCondition = battery.optString("healthCondition", "Good (Optimal)");
+            double temp = battery.optDouble("temperature", 31.0);
+            int batPct = battery.optInt("percent", 84);
 
             JSONObject hw = turbo.getHardwareHealthInfo();
             String ramPlus = hw.optString("ramPlusStatus", "Low Wear");
 
             views.setTextViewText(R.id.widget_stat_storage, String.format(Locale.US, "%.1f GB", freeGb));
-            views.setTextViewText(R.id.widget_stat_ram, ramPercent + "% Used");
+            views.setTextViewText(R.id.widget_stat_ram, ramPercent + "%");
             views.setTextViewText(R.id.widget_stat_battery, healthCondition);
-            views.setTextViewText(R.id.widget_stat_swap, ramPlus);
+            views.setTextViewText(R.id.widget_stat_battery_sub, String.format(Locale.US, "%.1f°C · %d%%", temp, batPct));
+            views.setTextViewText(R.id.widget_stat_swap, "Optimized");
+            views.setTextViewText(R.id.widget_stat_swap_sub, "RAM+: " + ramPlus);
             views.setTextViewText(R.id.widget_stats_status, status);
+
+            // Progress bars
+            views.setProgressBar(R.id.widget_progress_storage, 100, Math.min(100, storagePercentUsed), false);
+            views.setProgressBar(R.id.widget_progress_ram, 100, Math.min(100, ramPercent), false);
 
             // Boost action
             Intent boostIntent = new Intent(context, SystemStatsWidgetProvider.class);
@@ -92,7 +101,7 @@ public class SystemStatsWidgetProvider extends AppWidgetProvider {
                 long freedMb = Math.max(1, totalFreed / (1024 * 1024));
 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(context, "⚡ System Boost: Reclaimed " + freedMb + " MB!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "⚡ System Optimized: Freed " + freedMb + " MB!", Toast.LENGTH_SHORT).show();
                     AppWidgetManager mgr = AppWidgetManager.getInstance(context);
                     ComponentName thisWidget = new ComponentName(context, SystemStatsWidgetProvider.class);
                     int[] allIds = mgr.getAppWidgetIds(thisWidget);

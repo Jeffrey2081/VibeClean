@@ -42,9 +42,13 @@ public class OneTapWidgetProvider extends AppWidgetProvider {
             JSONObject ram = engine.getRamInfo();
             int ramPercent = ram.optInt("percentUsed", 0);
 
-            views.setTextViewText(R.id.widget_storage_text, String.format(Locale.US, "%.1f GB (Free)", freeGb));
+            views.setTextViewText(R.id.widget_storage_text, String.format(Locale.US, "%.1f GB Free", freeGb));
             views.setTextViewText(R.id.widget_ram_text, ramPercent + "% Used");
             views.setTextViewText(R.id.widget_status, status);
+
+            // Set progress bars
+            views.setProgressBar(R.id.widget_onetap_progress_storage, 100, Math.min(100, percentUsed), false);
+            views.setProgressBar(R.id.widget_onetap_progress_ram, 100, Math.min(100, ramPercent), false);
 
             // Set up PendingIntent for 1-Tap Clean Button
             Intent cleanIntent = new Intent(context, OneTapWidgetProvider.class);
@@ -86,7 +90,7 @@ public class OneTapWidgetProvider extends AppWidgetProvider {
                 long freedMb = Math.max(1, totalFreed / (1024 * 1024));
 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(context, "⚡ 1-Tap Clean: Freed " + freedMb + " MB!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "⚡ 1-Tap Boost: Reclaimed " + freedMb + " MB!", Toast.LENGTH_SHORT).show();
                     AppWidgetManager mgr = AppWidgetManager.getInstance(context);
                     ComponentName thisWidget = new ComponentName(context, OneTapWidgetProvider.class);
                     int[] allIds = mgr.getAppWidgetIds(thisWidget);

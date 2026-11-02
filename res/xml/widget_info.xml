@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="180dp"
-    android:minHeight="110dp"
-    android:targetCellWidth="3"
+    android:minWidth="140dp"
+    android:minHeight="90dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="80dp"
+    android:maxResizeWidth="320dp"
+    android:maxResizeHeight="220dp"
+    android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_onetap_cleaner"
+    android:previewLayout="@layout/widget_onetap_cleaner"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:description="@string/widget_name">
+    android:description="@string/widget_desc">
 </appwidget-provider>
