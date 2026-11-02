@@ -139,14 +139,24 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Update home screen widget on app resume
+        // Update all 5 home screen widgets on app resume
         try {
             AppWidgetManager mgr = AppWidgetManager.getInstance(this);
-            ComponentName thisWidget = new ComponentName(this, OneTapWidgetProvider.class);
-            int[] allIds = mgr.getAppWidgetIds(thisWidget);
-            for (int id : allIds) {
-                OneTapWidgetProvider.updateWidget(this, mgr, id, "Ready");
-            }
+
+            int[] oneTapIds = mgr.getAppWidgetIds(new ComponentName(this, OneTapWidgetProvider.class));
+            for (int id : oneTapIds) OneTapWidgetProvider.updateWidget(this, mgr, id, "Ready");
+
+            int[] statsIds = mgr.getAppWidgetIds(new ComponentName(this, SystemStatsWidgetProvider.class));
+            for (int id : statsIds) SystemStatsWidgetProvider.updateWidget(this, mgr, id, "Healthy");
+
+            int[] batIds = mgr.getAppWidgetIds(new ComponentName(this, BatteryMonitorWidgetProvider.class));
+            for (int id : batIds) BatteryMonitorWidgetProvider.updateWidget(this, mgr, id, "Active 🟢");
+
+            int[] storIds = mgr.getAppWidgetIds(new ComponentName(this, StorageCleanerWidgetProvider.class));
+            for (int id : storIds) StorageCleanerWidgetProvider.updateWidget(this, mgr, id, "Ready");
+
+            int[] pillIds = mgr.getAppWidgetIds(new ComponentName(this, QuickCleanWidgetProvider.class));
+            for (int id : pillIds) QuickCleanWidgetProvider.updateWidget(this, mgr, id, "1-TAP BOOST");
         } catch (Exception ignored) {}
 
         if (webView != null) {

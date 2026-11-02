@@ -11,6 +11,7 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_system_stats"
     android:previewLayout="@layout/widget_system_stats"
+    android:previewImage="@drawable/ic_launcher"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:description="@string/widget_system_stats_desc">

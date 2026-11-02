@@ -1,6 +1,8 @@
 package com.onetap.cleaner;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -449,5 +451,45 @@ public class CleanerBridge implements CleanerEngine.ScanProgressListener,
     @JavascriptInterface
     public String getAdbCommandScript() {
         return turboEngine.getAdbCommandScript();
+    }
+
+    // =========================================================================
+    // Material 3 Home Screen Widget Direct Pinning
+    // =========================================================================
+    @JavascriptInterface
+    public boolean isPinWidgetSupported() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                AppWidgetManager appWidgetManager = activity.getSystemService(AppWidgetManager.class);
+                return appWidgetManager != null && appWidgetManager.isRequestPinAppWidgetSupported();
+            } catch (Exception ignored) {}
+        }
+        return false;
+    }
+
+    @JavascriptInterface
+    public boolean pinWidget(int widgetType) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                AppWidgetManager appWidgetManager = activity.getSystemService(AppWidgetManager.class);
+                if (appWidgetManager != null && appWidgetManager.isRequestPinAppWidgetSupported()) {
+                    Class<?> providerClass;
+                    switch (widgetType) {
+                        case 1: providerClass = SystemStatsWidgetProvider.class; break;
+                        case 2: providerClass = OneTapWidgetProvider.class; break;
+                        case 3: providerClass = BatteryMonitorWidgetProvider.class; break;
+                        case 4: providerClass = StorageCleanerWidgetProvider.class; break;
+                        case 5: providerClass = QuickCleanWidgetProvider.class; break;
+                        default: providerClass = OneTapWidgetProvider.class; break;
+                    }
+                    ComponentName myProvider = new ComponentName(activity, providerClass);
+                    vibrate(60);
+                    return appWidgetManager.requestPinAppWidget(myProvider, null, null);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error pinning widget to home screen", e);
+            }
+        }
+        return false;
     }
 }

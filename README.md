@@ -87,7 +87,10 @@ Engineered with **Material 3 Expressive** geometry and **System Dynamic Color (M
 5. **Quick Clean Pill (`2 × 1`)**:
    - Ultra-minimalist Material 3 Expressive pill displaying available storage with a quick-tap BOOST action designed for clean dock setups.
 
-> **💡 Android 12–16 Widget Picker Fix**: All 5 widgets include native `android:previewLayout` and standardized cell bounds (`targetCellWidth`, `targetCellHeight`, `minResizeWidth`, `minResizeHeight`), ensuring Samsung One UI Home, Pixel Launcher, and third-party launchers reliably render the full collection in the widget drawer without dropping or hiding widgets.
+> **💡 Android 12–16 Widget Picker & Direct Pinning**:
+> 1. **Direct 1-Tap Home Screen Pinning (`requestPinAppWidget`)**: Add any of the 5 widgets directly to your home screen with a single tap inside the app (Tab 5) via Android's native widget pin system prompt—no hunting through launcher menus!
+> 2. **Dual Previews (`previewLayout` + `previewImage`)**: All 5 widgets include both XML scalable preview layouts and bitmap fallback icons, ensuring Samsung One UI Home, Pixel Launcher, and third-party launchers render them reliably without dropping or hiding widgets.
+> 3. **Consistent Naming**: All widgets are prefixed with `1Tap Cleaner`, grouping them cleanly at the top of the launcher widget drawer.
 
 ### 7. 🤖 Accessibility Auto-Cleaner (Hands-Free Cache Purge)
 - Built-in `AutoCacheCleanerService` automatically navigates through all installed apps.

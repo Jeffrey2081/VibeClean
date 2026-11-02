@@ -1375,7 +1375,7 @@
             btnAuto.addEventListener('click', () => {
                 const isEnabled = Bridge.isAccessibilityServiceEnabled();
                 if (!isEnabled) {
-                    if (confirm('VibeClean needs Accessibility Permission to automatically navigate to each app\'s Storage settings and click "Clear Cache" without manual effort.\n\nTap OK to open Accessibility Settings and turn on "VibeClean Auto-Cache Cleaner".')) {
+                    if (confirm('1Tap Cleaner needs Accessibility Permission to automatically navigate to each app\'s Storage settings and click "Clear Cache" without manual effort.\n\nTap OK to open Accessibility Settings and turn on "1Tap Auto-Cache Cleaner".')) {
                         Bridge.openAccessibilitySettings();
                     }
                     return;
@@ -1395,7 +1395,7 @@
 
                 window.soundEngine.playBoost();
                 Bridge.vibrate(80);
-                alert(`Starting Accessibility Auto-Clean for ${targetPkgs.length} applications. VibeClean will now automatically clear their caches.`);
+                alert(`Starting Accessibility Auto-Clean for ${targetPkgs.length} applications. 1Tap Cleaner will now automatically clear their caches.`);
                 Bridge.startAutoAccessibilityClean(targetPkgs);
             });
         }
@@ -1409,6 +1409,22 @@
         showCelebration(350000000, `Accessibility Auto-Cleaner cleared caches for ${total} applications!`);
         loadAppsList();
         loadDashboard();
+    };
+
+    window.pinWidget = function(widgetType) {
+        if (window.AndroidCleaner && typeof window.AndroidCleaner.pinWidget === 'function') {
+            try {
+                var res = window.AndroidCleaner.pinWidget(widgetType);
+                if (res) {
+                    if (window.SoundEffects) SoundEffects.play('pop');
+                    alert('Home screen widget placement prompt opened! Tap "Add" or drag the widget to your home screen.');
+                    return;
+                }
+            } catch (e) {
+                console.error("Error pinning widget:", e);
+            }
+        }
+        alert('To add this widget manually:\n1. Long-press an empty space on your phone\'s Home Screen.\n2. Tap "Widgets".\n3. Select "1Tap Cleaner" and choose your favorite widget!');
     };
 
     // Export switchTab to window for intent deep links and widget triggers

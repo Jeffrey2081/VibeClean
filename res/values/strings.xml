@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">VibeClean PRO</string>
+    <string name="app_name">1Tap Cleaner PRO</string>
     <string name="widget_clean_button">⚡ BOOST</string>
     <string name="widget_storage_label">Storage</string>
     <string name="widget_ram_label">RAM</string>
-    <string name="accessibility_service_label">VibeClean Auto-Cache Cleaner</string>
+    <string name="accessibility_service_label">1Tap Auto-Cache Cleaner</string>
     <string name="accessibility_service_desc">Automates clearing app cache files in system settings without requiring root access.</string>
 
     <!-- Widget 1: 1-Tap Clean & Boost (2x2 / 3x2) -->
-    <string name="widget_name">1-Tap Clean &amp; Boost</string>
+    <string name="widget_name">1Tap Clean &amp; Boost</string>
     <string name="widget_desc">Instant cache flush and memory boost with live storage and RAM meters.</string>
 
     <!-- Widget 2: System Stats Dashboard (4x2) -->
-    <string name="widget_system_stats_name">System Stats Dashboard</string>
+    <string name="widget_system_stats_name">1Tap System Stats Dashboard</string>
     <string name="widget_system_stats_desc">Live Free Storage, RAM, Battery Health condition, and Flash TRIM with 1-Tap Optimize.</string>
 
     <!-- Widget 3: Battery & Thermal Health (2x2) -->
-    <string name="widget_battery_monitor_name">Battery &amp; Thermal Health</string>
+    <string name="widget_battery_monitor_name">1Tap Battery &amp; Thermal Health</string>
     <string name="widget_battery_monitor_desc">Monitors true battery health condition, temperature °C, and 1-tap Quick Doze deep sleep.</string>
 
     <!-- Widget 4: Storage & Cache Gauge (3x2) -->
-    <string name="widget_storage_cleaner_name">Storage &amp; Cache Gauge</string>
+    <string name="widget_storage_cleaner_name">1Tap Storage &amp; Cache Gauge</string>
     <string name="widget_storage_cleaner_desc">Detailed storage breakdown with instant 1-tap junk cache cleaner.</string>
 
     <!-- Widget 5: Quick Clean Pill (2x1) -->
-    <string name="widget_quick_pill_name">Quick Clean Pill</string>
+    <string name="widget_quick_pill_name">1Tap Quick Clean Pill</string>
     <string name="widget_quick_pill_desc">Minimalist Material 3 Expressive pill showing free storage with instant boost action.</string>
 </resources>

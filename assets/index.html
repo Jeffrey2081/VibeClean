@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VibeClean PRO</title>
+    <title>1Tap Cleaner PRO</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,9 +12,9 @@
         <header class="app-header">
             <div class="header-left">
                 <div class="logo-badge">
-                    <img src="icons/app_icon.png" alt="VibeClean" class="app-icon-small">
+                    <img src="icons/app_icon.png" alt="1Tap Cleaner" class="app-icon-small">
                     <div class="title-group">
-                        <span class="app-title">VibeClean</span>
+                        <span class="app-title">1Tap Cleaner</span>
                         <span class="pro-tag">PRO</span>
                     </div>
                 </div>
@@ -485,7 +485,7 @@
                 <div class="card usage-notice-card" id="usage-notice-card" style="display: none;">
                     <div class="usage-text">
                         <strong>📊 Enable Exact App Storage Stats</strong>
-                        <p>Grant Usage Access to let VibeClean inspect internal cache and data breakdown with 100% precision.</p>
+                        <p>Grant Usage Access to let 1Tap Cleaner inspect internal cache and data breakdown with 100% precision.</p>
                     </div>
                     <button class="btn-usage-grant" id="btn-grant-usage">Enable</button>
                 </div>
@@ -662,7 +662,7 @@
                         <div class="mock-widget">
                             <div class="mock-header">
                                 <img src="icons/app_icon.png" class="mock-icon" alt="icon">
-                                <span class="mock-title">VibeClean PRO</span>
+                                <span class="mock-title">1Tap Cleaner PRO</span>
                                 <span class="mock-status">Ready</span>
                             </div>
                             <div class="mock-metrics">
@@ -681,16 +681,12 @@
 
                     <div class="guide-steps">
                         <div class="step-item">
-                            <span class="step-num">1</span>
-                            <span>Long-press on your phone's Home Screen wallpaper</span>
+                            <span class="step-num">⚡</span>
+                            <span><strong>Direct 1-Tap Placement</strong>: Tap <strong>"➕ Add to Home Screen"</strong> below on any widget!</span>
                         </div>
                         <div class="step-item">
-                            <span class="step-num">2</span>
-                            <span>Select <strong>Widgets</strong> from the popup menu</span>
-                        </div>
-                        <div class="step-item">
-                            <span class="step-num">3</span>
-                            <span>Choose from <strong>5 Material 3 Expressive Widgets</strong> that adapt to your system wallpaper!</span>
+                            <span class="step-num">📱</span>
+                            <span><strong>Launcher Drawer</strong>: Long-press Home Screen &rarr; tap <strong>Widgets</strong> &rarr; find <strong>1Tap Cleaner</strong></span>
                         </div>
                     </div>
 
@@ -702,6 +698,7 @@
                                 <span class="widget-showcase-size">4 × 2 Grid</span>
                             </div>
                             <p class="widget-showcase-desc">Material 3 Expressive multi-tile layout with Free Storage, RAM %, Battery Health condition, and Flash TRIM with instant ⚡ 1-Tap Optimize.</p>
+                            <button class="btn-pin-widget" onclick="pinWidget(1)">➕ Add to Home Screen</button>
                         </div>
                         <div class="widget-showcase-item">
                             <div class="widget-showcase-header">
@@ -709,6 +706,7 @@
                                 <span class="widget-showcase-size">2 × 2 / 3 × 2</span>
                             </div>
                             <p class="widget-showcase-desc">Storage and RAM meters with horizontal progress tracks and a prominent M3 Expressive ⚡ BOOST NOW button.</p>
+                            <button class="btn-pin-widget" onclick="pinWidget(2)">➕ Add to Home Screen</button>
                         </div>
                         <div class="widget-showcase-item">
                             <div class="widget-showcase-header">
@@ -716,6 +714,7 @@
                                 <span class="widget-showcase-size">2 × 2 Grid</span>
                             </div>
                             <p class="widget-showcase-desc">True battery health condition (Optimal/Good), live temperature in °C, charge level, and 1-tap 🌙 QUICK DOZE deep sleep button.</p>
+                            <button class="btn-pin-widget" onclick="pinWidget(3)">➕ Add to Home Screen</button>
                         </div>
                         <div class="widget-showcase-item">
                             <div class="widget-showcase-header">
@@ -723,6 +722,7 @@
                                 <span class="widget-showcase-size">3 × 2 Grid</span>
                             </div>
                             <p class="widget-showcase-desc">Storage gauge showing free space vs cached junk with 1-tap 🧹 CLEAN JUNK CACHE action.</p>
+                            <button class="btn-pin-widget" onclick="pinWidget(4)">➕ Add to Home Screen</button>
                         </div>
                         <div class="widget-showcase-item">
                             <div class="widget-showcase-header">
@@ -730,6 +730,7 @@
                                 <span class="widget-showcase-size">2 × 1 Compact</span>
                             </div>
                             <p class="widget-showcase-desc">Ultra-minimal Material 3 Expressive pill displaying free GB with a quick-tap BOOST action for sleek dock setups.</p>
+                            <button class="btn-pin-widget" onclick="pinWidget(5)">➕ Add to Home Screen</button>
                         </div>
                     </div>
                 </div>
